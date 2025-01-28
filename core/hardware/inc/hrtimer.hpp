@@ -18,14 +18,14 @@ class HrTimer final : public ITimer {
 
     void setCallback(timer::TimerCallback timerCallback, timer::TimerData data) override;
 
-    common::Error startOnce(const uint32_t timeUs) override;
+    common::Error startOnce(const common::Time timeUs) override;
 
-    common::Error startPeriodic(const uint32_t timeUs) override;
+    common::Error startPeriodic(const common::Time timeUs) override;
 
     common::Error stop() override;
   
   private:
-    enum class TimerNumber {
+    enum class TimerNumber : uint8_t {
         TIMER_NOT_EXIST = 0,
         TIMER_1,
         TIMER_2,
@@ -35,18 +35,23 @@ class HrTimer final : public ITimer {
     
     static void timerCallback(void* arg);
 
+    common::Error setTimerProperties();
+
+    void removeTimerProperties();
+
     bool isPossibleCreateTimer();
 
     void setTimerNumber();
 
     static constexpr uint8_t MAX_TIMER_COUNT{4};
+    static constexpr std::string_view INVALID_NAME{"Timer not exist"};
     static uint8_t timerCount_;
     static std::queue<HrTimer::TimerNumber> availableTimerNumber_;
     TimerHandle handle_{nullptr};
     TimerCallback cb_{nullptr};
     TimerData data_{nullptr};
     TimerNumber timerNumber_{TimerNumber::TIMER_NOT_EXIST};
-    std::string name_{""};
+    std::string name_{INVALID_NAME.data()};
 };
 } //hw
 } //timer

@@ -15,9 +15,9 @@ class SensorsController {
         IHumiditySensor& humiditySensor;
     };
 
-    SensorsController(Config config);
+    explicit SensorsController(Config config);
 
-    common::Error start(uint32_t timeUs);
+    common::Error start(common::Time timeUs);
 
     common::Error stop();
 
@@ -30,7 +30,7 @@ class SensorsController {
 
     Config config_;
     common::MeasurementValues measurementValues_;
-    bool isInterrupt_{false};
+    bool isReadyToMeasure_{true};
 };
 
 } //app

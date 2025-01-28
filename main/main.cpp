@@ -11,7 +11,7 @@
 
 namespace {
 const char* TAG = "MAIN";
-static constexpr uint32_t MEASUREMENT_TIME_US{common::utils::msToUs<uint32_t, uint32_t>(common::utils::sToMs<uint32_t, uint32_t>(1))};
+static constexpr common::Time MEASUREMENT_TIME_US{common::utils::msToUs<common::Time, common::Time>(common::utils::sToMs<common::Time, common::Time>(1))};
 }
 
 extern "C" {

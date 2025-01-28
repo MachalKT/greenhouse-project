@@ -13,11 +13,11 @@ SensorsController::SensorsController(Config config) : config_{config} {
         }
 
         SensorsController* sensorController = static_cast<SensorsController*>(arg);
-        sensorController->isInterrupt_ = true;
+        sensorController->isReadyToMeasure_ = true;
     }, this);
 }
 
-common::Error SensorsController::start(uint32_t timeUs) {
+common::Error SensorsController::start(common::Time timeUs) {
     return config_.measurementTimer.startPeriodic(timeUs);
 }
 
@@ -30,8 +30,8 @@ common::MeasurementValues SensorsController::getMeasurementValues() {
 }
 
 void SensorsController::yield() {
-    if(isInterrupt_) {
-        isInterrupt_ = false;
+    if(isReadyToMeasure_) {
+        isReadyToMeasure_ = false;
         takeMeasurement();
     }
 }

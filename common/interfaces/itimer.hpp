@@ -12,9 +12,9 @@ class ITimer {
   public:
     virtual void setCallback(TimerCallback timerCallback, TimerData arg) = 0;
 
-    virtual common::Error startOnce(const uint32_t timeUs) = 0;
+    virtual common::Error startOnce(const common::Time timeUs) = 0;
 
-    virtual common::Error startPeriodic(const uint32_t timeUs) = 0;
+    virtual common::Error startPeriodic(const common::Time timeUs) = 0;
 
     virtual common::Error stop() = 0;
 };

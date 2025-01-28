@@ -2,9 +2,9 @@
 
 #include <limits>
 
-#include "isensors.hpp"
+#include "interfaces/isensors.hpp"
+#include "interfaces/ii2c.hpp"
 #include "delay.hpp"
-#include "ii2c.hpp"
 #include "types.hpp"
 
 class Sht40 final : public ITemperatureSensor, public IHumiditySensor{
@@ -23,7 +23,7 @@ class Sht40 final : public ITemperatureSensor, public IHumiditySensor{
 
     float getTemperatureC() override;
 
-    float getHumidityRh();
+    float getHumidityRh() override;
 
   private:
     enum class Parameter {

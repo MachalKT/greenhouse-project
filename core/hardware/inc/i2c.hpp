@@ -1,7 +1,6 @@
 #pragma once
 
-#include "ii2c.hpp"
-
+#include "interfaces/ii2c.hpp"
 #include "driver/i2c.h"
 #include "driver/gpio.h"
 

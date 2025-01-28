@@ -5,8 +5,14 @@
 
 #include "i2c.hpp"
 #include "sht40.hpp"
+#include "hrtimer.hpp"
+#include "utils.hpp"
+#include "sensorscontroller.hpp"
 
+namespace {
 const char* TAG = "MAIN";
+static constexpr common::Time MEASUREMENT_TIME_US{common::utils::msToUs<common::Time, common::Time>(common::utils::sToMs<common::Time, common::Time>(1))};
+}
 
 extern "C" {
 void app_main(void)
@@ -23,13 +29,17 @@ void app_main(void)
         ESP_LOGE(TAG, "sht init fail");
     }
 
-    float temperatureC{};
-    float humidityRh{};
+    timer::hw::HrTimer measurementTimer;
+    errorCode = measurementTimer.init();
+    if(errorCode != common::Error::OK) {
+        ESP_LOGE(TAG, "Measurement timer init fail");
+    }
+
+    app::SensorsController sensorsController{{measurementTimer, sht40, sht40}};
+    sensorsController.start(MEASUREMENT_TIME_US);
 
     while(1) {
-        temperatureC = sht40.getTemperatureC();
-        humidityRh = sht40.getHumidityRh();
-        ESP_LOGI(TAG, "temperature: %.2f, humidity: %.2f", temperatureC, humidityRh);
+        sensorsController.yield();
         core::sw::delayMs(1000);
     }
 }

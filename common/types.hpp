@@ -1,7 +1,12 @@
 #pragma once
 
+#include <cstdint>
+#include <functional>
+
 namespace common {
 using Time = uint64_t;
+using Callback = std::function<void(void*)>;
+using CallbackData = void*;
 
 enum class Error : uint8_t{
     OK,

@@ -42,7 +42,7 @@ common::Error HrTimer::deinit() {
     return common::Error::OK;
 }
 
-void HrTimer::setCallback(TimerCallback cb, TimerData data) {
+void HrTimer::setCallback(common::Callback cb, common::CallbackData data) {
     cb_ = cb;
     data_ = data; 
 }
@@ -84,7 +84,9 @@ void HrTimer::timerCallback(void* arg) {
     }
 
     HrTimer* timer = static_cast<HrTimer*>(arg);
-    timer->cb_(timer->data_);
+    if(timer->cb_) {
+        timer->cb_(timer->data_);
+    }
 }
 
 common::Error HrTimer::setTimerProperties() {

@@ -48,19 +48,15 @@ class Gpio {
 
     Pin getPin() const;
 
-    common::Error setInterrupt(const InterruptType interruptType, common::Callback interruptCallback, common::CallbackData data);
+    common::Error setInterrupt(const InterruptType interruptType, common::Callback interruptCallback, common::CallbackData callbackData);
 
   private:
-    static void interruptCallback(void* arg);
-
     common::Error setIsrService();
 
     static std::vector<Pin> usedPins_;
     bool isInterruptEnabled_{false};
     Pin pin_{Pin::PIN_NOT_ASSIGN};
     Mode mode_{Mode::DISABLE};
-    common::Callback cb_{nullptr};
-    common::CallbackData data_{nullptr};
 };
 
 

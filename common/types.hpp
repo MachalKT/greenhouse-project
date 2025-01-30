@@ -5,7 +5,7 @@
 
 namespace common {
 using Time = uint64_t;
-using Callback = std::function<void(void*)>;
+using Callback = void(*)(void*);
 using CallbackData = void*;
 
 enum class Error : uint8_t{

@@ -83,16 +83,14 @@ Gpio::Pin Gpio::getPin() const {
     return pin_;
 }
 
-common::Error Gpio::setInterrupt(const InterruptType interruptType, common::Callback cb, common::CallbackData data) {
+common::Error Gpio::setInterrupt(const InterruptType interruptType, common::Callback interruptCallback, common::CallbackData callbackData) {
     if(pin_ == Pin::PIN_NOT_ASSIGN) {
         return common::Error::INVALID_STATE;
     }
 
-    if(not cb) {
+    if(not interruptCallback) {
         return common::Error::INVALID_ARG;
     }
-    cb_ = cb;
-    data_ = data;
 
     common::Error errorCode = setIsrService();
     if(errorCode != common::Error::OK) {
@@ -104,22 +102,12 @@ common::Error Gpio::setInterrupt(const InterruptType interruptType, common::Call
         return common::Error::FAIL;
     }
 
-    espErrorCode = gpio_isr_handler_add(static_cast<gpio_num_t>(pin_), interruptCallback, this);
+    espErrorCode = gpio_isr_handler_add(static_cast<gpio_num_t>(pin_), interruptCallback, callbackData);
     if(espErrorCode != ESP_OK) {
         return common::Error::FAIL;
     }
 
     return common::Error::OK;
-}
-
-void Gpio::interruptCallback(void* arg) {
-    if(not arg) {
-        return;
-    }
-    Gpio* gpio = static_cast<Gpio*>(arg);
-    if(gpio->cb_) {
-        gpio->cb_(gpio->data_);
-    }
 }
 
 common::Error Gpio::setIsrService() {

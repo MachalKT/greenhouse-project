@@ -16,7 +16,7 @@ class HrTimer final : public ITimer {
 
     common::Error deinit();
 
-    void setCallback(timer::TimerCallback timerCallback, timer::TimerData data) override;
+    void setCallback(common::Callback timerCallback, common::CallbackData data) override;
 
     common::Error startOnce(const common::Time timeUs) override;
 
@@ -48,8 +48,8 @@ class HrTimer final : public ITimer {
     static uint8_t timerCount_;
     static std::queue<HrTimer::TimerNumber> availableTimerNumber_;
     TimerHandle handle_{nullptr};
-    TimerCallback cb_{nullptr};
-    TimerData data_{nullptr};
+    common::Callback cb_{nullptr};
+    common::CallbackData data_{nullptr};
     TimerNumber timerNumber_{TimerNumber::TIMER_NOT_EXIST};
     std::string name_{INVALID_NAME.data()};
 };

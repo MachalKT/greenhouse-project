@@ -5,12 +5,9 @@
 #include "types.hpp"
 
 namespace timer {
-using TimerData = void*;
-using TimerCallback = std::function<void(void*)>;
-
 class ITimer {
   public:
-    virtual void setCallback(TimerCallback timerCallback, TimerData arg) = 0;
+    virtual void setCallback(common::Callback timerCallback, common::CallbackData data) = 0;
 
     virtual common::Error startOnce(const common::Time timeUs) = 0;
 

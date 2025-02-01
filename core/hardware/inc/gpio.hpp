@@ -87,9 +87,9 @@ class Gpio {
     common::Error setIsrService();
 
     static std::vector<Pin> usedPins_;
-    bool isInterruptEnabled_ {false};
-    Pin pin_ {Pin::PIN_NOT_ASSIGN};
-    Mode mode_ {Mode::DISABLE};
+    bool isInterruptEnabled_{false};
+    Pin pin_{Pin::PIN_NOT_ASSIGN};
+    Mode mode_{Mode::DISABLE};
 };
 
 } // namespace hw

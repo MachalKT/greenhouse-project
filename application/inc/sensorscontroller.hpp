@@ -30,7 +30,7 @@ class SensorsController {
 
     Config config_;
     common::MeasurementValues measurementValues_;
-    bool isReadyToMeasure_ {true};
+    bool isReadyToMeasure_{true};
 };
 
 } // namespace app

@@ -4,7 +4,7 @@
 
 namespace hw {
 
-std::vector<Gpio::Pin> Gpio::usedPins_ {};
+std::vector<Gpio::Pin> Gpio::usedPins_{};
 
 Gpio::Gpio(Pin pin) {
   if (usedPins_.empty()) {
@@ -58,7 +58,7 @@ common::Error Gpio::configurePullUpDown(const bool pullUpEnable,
     return common::Error::INVALID_STATE;
   }
 
-  gpio_pull_mode_t pullMode {GPIO_FLOATING};
+  gpio_pull_mode_t pullMode{GPIO_FLOATING};
   if (pullUpEnable and pullDownEnable) {
     pullMode = GPIO_PULLUP_PULLDOWN;
   } else if (pullUpEnable) {

@@ -5,8 +5,8 @@
 namespace timer {
 namespace hw {
 
-uint8_t HrTimer::timerCount_ {0};
-std::queue<HrTimer::TimerNumber> HrTimer::availableTimerNumber_ {};
+uint8_t HrTimer::timerCount_{0};
+std::queue<HrTimer::TimerNumber> HrTimer::availableTimerNumber_{};
 
 common::Error HrTimer::init() {
   common::Error errorCode = setTimerProperties();
@@ -102,8 +102,7 @@ common::Error HrTimer::setTimerProperties() {
   }
 
   setTimerNumber();
-  name_ =
-      std::string {"Timer"} + std::to_string(static_cast<int>(timerNumber_));
+  name_ = std::string{"Timer"} + std::to_string(static_cast<int>(timerNumber_));
 
   return common::Error::OK;
 }
@@ -120,7 +119,7 @@ bool HrTimer::isPossibleCreateTimer() {
 }
 
 void HrTimer::setTimerNumber() {
-  TimerNumber newTimerNumber {TimerNumber::TIMER_NOT_EXIST};
+  TimerNumber newTimerNumber{TimerNumber::TIMER_NOT_EXIST};
   if (not availableTimerNumber_.empty()) {
     newTimerNumber = availableTimerNumber_.front();
     availableTimerNumber_.pop();

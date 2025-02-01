@@ -7,7 +7,7 @@ const char* TAG = "SensorsController";
 }
 
 namespace app {
-SensorsController::SensorsController(Config config) : config_ {config} {
+SensorsController::SensorsController(Config config) : config_{config} {
   config.measurementTimer.setCallback(
       [](void* arg) {
         if (not arg) {

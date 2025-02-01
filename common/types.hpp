@@ -16,8 +16,8 @@ enum class Error : uint8_t {
 };
 
 struct MeasurementValues {
-    float temperatureC {0.0f};
-    float humidityRh {0.0f};
+    float temperatureC{0.0f};
+    float humidityRh{0.0f};
 };
 
 } // namespace common

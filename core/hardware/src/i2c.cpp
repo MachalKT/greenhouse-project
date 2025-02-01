@@ -2,7 +2,7 @@
 
 namespace hw {
 common::Error I2c::init() {
-  i2c_config_t i2cConfig {};
+  i2c_config_t i2cConfig{};
   i2cConfig.mode = I2C_MODE;
   i2cConfig.sda_io_num = I2C_SDA_IO_NUM;
   i2cConfig.sda_pullup_en = I2C_SDA_PULLUP_EN;

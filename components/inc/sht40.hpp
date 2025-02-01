@@ -33,11 +33,11 @@ class Sht40 final : public ITemperatureSensor, public IHumiditySensor {
 
     float calculateHumidityRh(const uint16_t data);
 
-    static constexpr uint8_t ADDRESS {0x44};
-    static constexpr uint8_t RESET_COMMAND {0x94};
-    static constexpr size_t BUFFER_SIZE {6};
-    static constexpr float INVALID_VALUE {std::numeric_limits<float>::max()};
+    static constexpr uint8_t ADDRESS{0x44};
+    static constexpr uint8_t RESET_COMMAND{0x94};
+    static constexpr size_t BUFFER_SIZE{6};
+    static constexpr float INVALID_VALUE{std::numeric_limits<float>::max()};
 
     hw::II2c& i2c_;
-    Precision precision_ {Precision::HIGH};
+    Precision precision_{Precision::HIGH};
 };

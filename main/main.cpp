@@ -11,7 +11,7 @@
 
 namespace {
 const char* TAG = "MAIN";
-static constexpr common::Time MEASUREMENT_TIME_US {
+static constexpr common::Time MEASUREMENT_TIME_US{
     common::utils::msToUs<common::Time, common::Time>(
         common::utils::sToMs<common::Time, common::Time>(1))};
 } // namespace
@@ -25,7 +25,7 @@ void app_main(void) {
     ESP_LOGE(TAG, "i2c init fail");
   }
 
-  Sht40 sht40 {i2c};
+  Sht40 sht40{i2c};
   errorCode = sht40.init();
   if (errorCode != common::Error::OK) {
     ESP_LOGE(TAG, "sht init fail");
@@ -37,7 +37,7 @@ void app_main(void) {
     ESP_LOGE(TAG, "Measurement timer init fail");
   }
 
-  app::SensorsController sensorsController {{measurementTimer, sht40, sht40}};
+  app::SensorsController sensorsController{{measurementTimer, sht40, sht40}};
   sensorsController.start(MEASUREMENT_TIME_US);
 
   while (1) {

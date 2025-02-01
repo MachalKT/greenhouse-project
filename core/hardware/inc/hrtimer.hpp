@@ -45,15 +45,15 @@ class HrTimer final : public ITimer {
 
     void setTimerNumber();
 
-    static constexpr uint8_t MAX_TIMER_COUNT {4};
-    static constexpr std::string_view INVALID_NAME {"Timer not exist"};
+    static constexpr uint8_t MAX_TIMER_COUNT{4};
+    static constexpr std::string_view INVALID_NAME{"Timer not exist"};
     static uint8_t timerCount_;
     static std::queue<HrTimer::TimerNumber> availableTimerNumber_;
-    TimerHandle handle_ {nullptr};
-    common::Callback cb_ {nullptr};
-    common::CallbackData data_ {nullptr};
-    TimerNumber timerNumber_ {TimerNumber::TIMER_NOT_EXIST};
-    std::string name_ {INVALID_NAME.data()};
+    TimerHandle handle_{nullptr};
+    common::Callback cb_{nullptr};
+    common::CallbackData data_{nullptr};
+    TimerNumber timerNumber_{TimerNumber::TIMER_NOT_EXIST};
+    std::string name_{INVALID_NAME.data()};
 };
 } // namespace hw
 } // namespace timer

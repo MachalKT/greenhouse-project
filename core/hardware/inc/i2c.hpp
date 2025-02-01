@@ -1,20 +1,24 @@
 #pragma once
 
-#include "interfaces/ii2c.hpp"
-#include "driver/i2c.h"
 #include "driver/gpio.h"
+#include "driver/i2c.h"
+#include "interfaces/ii2c.hpp"
 
 namespace hw {
 class I2c final : public II2c {
   public:
     common::Error init();
 
-    common::Error write(const uint8_t deviceAddress, const uint8_t command) override;
+    common::Error write(const uint8_t deviceAddress,
+                        const uint8_t command) override;
 
-    common::Error write(const uint8_t deviceAddress, const uint8_t registerAddress, const uint8_t* buffer, const size_t bufferLength) override;
+    common::Error write(const uint8_t deviceAddress,
+                        const uint8_t registerAddress, const uint8_t* buffer,
+                        const size_t bufferLength) override;
 
-    common::Error read(const uint8_t deviceAddress, uint8_t* buffer, const size_t bufferLength) override;
-  
+    common::Error read(const uint8_t deviceAddress, uint8_t* buffer,
+                       const size_t bufferLength) override;
+
   private:
     const i2c_port_t I2C_PORT{I2C_NUM_1};
     const i2c_mode_t I2C_MODE{I2C_MODE_MASTER};
@@ -24,4 +28,4 @@ class I2c final : public II2c {
     const gpio_pullup_t I2C_SCL_PULLUP_EN{GPIO_PULLUP_ENABLE};
     const uint32_t I2C_CLOCK_SPEED{400'000};
 };
-} //hw
+} // namespace hw

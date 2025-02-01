@@ -5,14 +5,14 @@
 
 namespace common {
 using Time = uint64_t;
-using Callback = void(*)(void*);
+using Callback = void (*)(void*);
 using CallbackData = void*;
 
-enum class Error : uint8_t{
-    OK,
-    FAIL,
-    INVALID_ARG,
-    INVALID_STATE,
+enum class Error : uint8_t {
+  OK,
+  FAIL,
+  INVALID_ARG,
+  INVALID_STATE,
 };
 
 struct MeasurementValues {
@@ -20,4 +20,4 @@ struct MeasurementValues {
     float humidityRh{0.0f};
 };
 
-} //common
+} // namespace common

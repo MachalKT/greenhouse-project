@@ -33,4 +33,4 @@ class SensorsController {
     bool isReadyToMeasure_{true};
 };
 
-} //app
+} // namespace app

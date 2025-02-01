@@ -2,12 +2,14 @@
 
 #include <cstdint>
 #include <functional>
+
 #include "types.hpp"
 
 namespace timer {
 class ITimer {
   public:
-    virtual void setCallback(common::Callback timerCallback, common::CallbackData data) = 0;
+    virtual void setCallback(common::Callback timerCallback,
+                             common::CallbackData data) = 0;
 
     virtual common::Error startOnce(const common::Time timeUs) = 0;
 
@@ -15,4 +17,4 @@ class ITimer {
 
     virtual common::Error stop() = 0;
 };
-} //timer
+} // namespace timer

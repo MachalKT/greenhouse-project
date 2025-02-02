@@ -1,4 +1,4 @@
-set(SRC src/i2c.cpp src/hrtimer.cpp src/gpio.cpp)
+set(SRC src/i2c.cpp src/hrtimer.cpp src/gpio.cpp src/spi.cpp)
 
 set(INC inc ${PROJECT_DIR}/common)
 

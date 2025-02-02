@@ -88,12 +88,15 @@ class Gpio {
      */
     Level getLevel() const;
 
+<<<<<<< HEAD
     /**
      * @brief Get pin number.
      * @note if pin is not assigned, return PIN_NOT_ASSIGN (-1).
      *
      * @return common::PinNumber Pin number.
      */
+=======
+>>>>>>> 9b5d83f (added spi)
     common::PinNumber getPin() const;
 
     /**
@@ -112,6 +115,7 @@ class Gpio {
                                common::Callback interruptCallback,
                                common::CallbackData callbackData);
 
+<<<<<<< HEAD
     /**
      * @brief Is pin assigned.
      *
@@ -131,6 +135,13 @@ class Gpio {
      */
     common::Error setIsrService_();
 
+=======
+    bool isPinAssigned() const;
+
+  private:
+    common::Error setIsrService();
+
+>>>>>>> 9b5d83f (added spi)
     static constexpr int8_t PIN_NOT_ASSIGN{-1};
     static constexpr int8_t PIN_FIRST_NUMBER{0};
     static constexpr int8_t PIN_LAST_NUMBER{33};

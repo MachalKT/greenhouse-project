@@ -103,7 +103,7 @@ common::Error Gpio::setInterrupt(const InterruptType interruptType,
     return common::Error::INVALID_ARG;
   }
 
-  common::Error errorCode = setIsrService();
+  common::Error errorCode = setIsrService_();
   if (errorCode != common::Error::OK) {
     return errorCode;
   }
@@ -124,7 +124,9 @@ common::Error Gpio::setInterrupt(const InterruptType interruptType,
   return common::Error::OK;
 }
 
-common::Error Gpio::setIsrService() {
+bool Gpio::isPinAssigned() const { return pinNumber_ != PIN_NOT_ASSIGN; }
+
+common::Error Gpio::setIsrService_() {
   if (isInterruptEnabled_) {
     return common::Error::OK;
   }
@@ -137,7 +139,5 @@ common::Error Gpio::setIsrService() {
   isInterruptEnabled_ = true;
   return common::Error::OK;
 }
-
-bool Gpio::isPinAssigned() const { return pinNumber_ != PIN_NOT_ASSIGN; }
 
 } // namespace hw

@@ -9,19 +9,19 @@ uint8_t HrTimer::timerCount_{0};
 std::queue<HrTimer::TimerNumber> HrTimer::availableTimerNumber_{};
 
 common::Error HrTimer::init() {
-  common::Error errorCode = setTimerProperties();
+  common::Error errorCode = setTimerProperties_();
   if (errorCode != common::Error::OK) {
     return errorCode;
   }
 
   esp_timer_create_args_t timerArgs = {};
-  timerArgs.callback = timerCallback;
+  timerArgs.callback = timerCallback_;
   timerArgs.arg = this;
   timerArgs.name = name_.data();
 
   esp_err_t espErrorCode = esp_timer_create(&timerArgs, &handle_);
   if (espErrorCode != ESP_OK) {
-    removeTimerProperties();
+    removeTimerProperties_();
     return common::Error::FAIL;
   }
 
@@ -38,7 +38,7 @@ common::Error HrTimer::deinit() {
     stop();
     esp_timer_delete(handle_);
   }
-  removeTimerProperties();
+  removeTimerProperties_();
 
   return common::Error::OK;
 }
@@ -79,7 +79,7 @@ common::Error HrTimer::stop() {
   return common::Error::OK;
 }
 
-void HrTimer::timerCallback(void* arg) {
+void HrTimer::timerCallback_(void* arg) {
   if (not arg) {
     return;
   }
@@ -90,35 +90,35 @@ void HrTimer::timerCallback(void* arg) {
   }
 }
 
-common::Error HrTimer::setTimerProperties() {
+common::Error HrTimer::setTimerProperties_() {
   if (timerNumber_ != TimerNumber::TIMER_NOT_EXIST) {
     return common::Error::INVALID_STATE;
   }
 
   ++timerCount_;
-  if (not isPossibleCreateTimer()) {
+  if (not isPossibleCreateTimer_()) {
     --timerCount_;
     return common::Error::FAIL;
   }
 
-  setTimerNumber();
+  setTimerNumber_();
   name_ = std::string{"Timer"} + std::to_string(static_cast<int>(timerNumber_));
 
   return common::Error::OK;
 }
 
-void HrTimer::removeTimerProperties() {
+void HrTimer::removeTimerProperties_() {
   availableTimerNumber_.push(timerNumber_);
   timerNumber_ = TimerNumber::TIMER_NOT_EXIST;
   --timerCount_;
   name_ = INVALID_NAME.data();
 }
 
-bool HrTimer::isPossibleCreateTimer() {
+bool HrTimer::isPossibleCreateTimer_() {
   return timerCount_ > MAX_TIMER_COUNT ? false : true;
 }
 
-void HrTimer::setTimerNumber() {
+void HrTimer::setTimerNumber_() {
   TimerNumber newTimerNumber{TimerNumber::TIMER_NOT_EXIST};
   if (not availableTimerNumber_.empty()) {
     newTimerNumber = availableTimerNumber_.front();

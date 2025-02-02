@@ -7,45 +7,6 @@
 namespace hw {
 class Gpio {
   public:
-    enum class Pin : int8_t {
-      PIN_NOT_ASSIGN = -2,
-      PIN_0 = 0,
-      PIN_1,
-      PIN_2,
-      PIN_3,
-      PIN_4,
-      PIN_5,
-      PIN_6,
-      PIN_7,
-      PIN_8,
-      PIN_9,
-      PIN_10,
-      PIN_11,
-      PIN_12,
-      PIN_13,
-      PIN_14,
-      PIN_15,
-      PIN_16,
-      PIN_17,
-      PIN_18,
-      PIN_19,
-      PIN_20,
-      PIN_21,
-      PIN_22,
-      PIN_23,
-      PIN_24,
-      PIN_25,
-      PIN_26,
-      PIN_27,
-      PIN_28,
-      PIN_29,
-      PIN_30,
-      PIN_31,
-      PIN32,
-      PIN33,
-      PIN_COUNT = 34
-    };
-
     enum class Mode : uint8_t {
       DISABLE = 0,
       INPUT,
@@ -66,7 +27,7 @@ class Gpio {
       HIGH_LEVEL,
     };
 
-    explicit Gpio(const Pin pin);
+    explicit Gpio(const common::PinNumber pinNumber);
 
     common::Error setMode(const Mode mode);
 
@@ -77,18 +38,23 @@ class Gpio {
 
     Level getLevel() const;
 
-    Pin getPin() const;
+    common::PinNumber getPin() const;
 
     common::Error setInterrupt(const InterruptType interruptType,
                                common::Callback interruptCallback,
                                common::CallbackData callbackData);
 
+    bool isPinAssigned() const;
+
   private:
     common::Error setIsrService();
 
-    static std::vector<Pin> usedPins_;
+    static constexpr int8_t PIN_NOT_ASSIGN{-1};
+    static constexpr int8_t PIN_FIRST_NUMBER{0};
+    static constexpr int8_t PIN_LAST_NUMBER{33};
+    static std::vector<common::PinNumber> usedPinNumbers_;
     bool isInterruptEnabled_{false};
-    Pin pin_{Pin::PIN_NOT_ASSIGN};
+    int8_t pinNumber_{PIN_NOT_ASSIGN};
     Mode mode_{Mode::DISABLE};
 };
 

@@ -7,15 +7,55 @@
 namespace hw {
 class I2c final : public II2c {
   public:
+    /**
+     * @brief Initialize I2C.
+     *
+     * @return
+     *   - common::Error::OK: Success.
+     *   - common::Error::FAIL: Fail.
+     */
     common::Error init();
 
+    /**
+     * @brief Write to I2C device.
+     *
+     * @param deviceAddress Device address.
+     * @param command Command.
+     *
+     * @return
+     *   - common::Error::OK: Success.
+     *   - common::Error::FAIL: Fail.
+     */
     common::Error write(const uint8_t deviceAddress,
                         const uint8_t command) override;
 
+    /**
+     * @brief Write to I2C device.
+     *
+     * @param deviceAddress Device address.
+     * @param registerAddress Register address.
+     * @param buffer Buffer.
+     * @param bufferLength Buffer length.
+     *
+     * @return
+     *   - common::Error::OK: Success.
+     *   - common::Error::FAIL: Fail.
+     */
     common::Error write(const uint8_t deviceAddress,
                         const uint8_t registerAddress, const uint8_t* buffer,
                         const size_t bufferLength) override;
 
+    /**
+     * @brief Read from I2C device.
+     *
+     * @param deviceAddress Device address.
+     * @param buffer Buffer.
+     * @param bufferLength Buffer length.
+     *
+     * @return
+     *   - common::Error::OK: Success.
+     *   - common::Error::FAIL: Fail.
+     */
     common::Error read(const uint8_t deviceAddress, uint8_t* buffer,
                        const size_t bufferLength) override;
 

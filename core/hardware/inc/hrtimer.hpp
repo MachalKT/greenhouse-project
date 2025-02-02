@@ -13,20 +13,72 @@ using TimerHandle = esp_timer_handle_t;
 
 class HrTimer final : public ITimer {
   public:
+    /**
+     * @brief Initialize HrTimer.
+     *
+     * @return
+     *   - common::Error::OK: Success.
+     *   - common::Error::FAIL: Fail.
+     *   - common::Error::INVALID_STATE: Timer is already initialized.
+     */
     common::Error init();
 
+    /**
+     * @brief Deinitialize HrTimer.
+     *
+     * @return
+     *   - common::Error::OK: Success.
+     *   - common::Error::FAIL: Fail.
+     *   - common::Error::INVALID_STATE: Timer is not initialized.
+     */
     common::Error deinit();
 
+    /**
+     * @brief Set callback.
+     * @note Callback is called in interrupt context.
+     *
+     * @param timerCallback Timer callback.
+     * @param data Callback data.
+     */
     void setCallback(common::Callback timerCallback,
                      common::CallbackData data) override;
 
+    /**
+     * @brief Start timer once.
+     * @note If timer is already started, restart timer.
+     *
+     * @param timeUs Time in microseconds.
+     *
+     * @return
+     *   - common::Error::OK: Success.
+     *   - common::Error::FAIL: Fail.
+     */
     common::Error startOnce(const common::Time timeUs) override;
 
+    /**
+     * @brief Start timer periodically.
+     * @note If timer is already started, restart timer.
+     *
+     * @param timeUs Time in microseconds.
+     *
+     * @return
+     *   - common::Error::OK: Success.
+     *   - common::Error::FAIL: Fail.
+     */
     common::Error startPeriodic(const common::Time timeUs) override;
 
+    /**
+     * @brief Stop timer.
+     *
+     * @return
+     *   - common::Error::OK: Success.
+     */
     common::Error stop() override;
 
   private:
+    /**
+     * @brief Timer number.
+     */
     enum class TimerNumber : uint8_t {
       TIMER_NOT_EXIST = 0,
       TIMER_1,
@@ -35,14 +87,40 @@ class HrTimer final : public ITimer {
       TIMER_4
     };
 
+    /**
+     * @brief Timer callback.
+     *
+     * @param arg Timer callback data.
+     */
     static void timerCallback(void* arg);
 
+    /**
+     * @brief Set timer properties.
+     *
+     * @return
+     *   - common::Error::OK: Success.
+     *   - common::Error::FAIL: Fail.
+     *   - common::Error::INVALID_STATE: Timer is not exist.
+     */
     common::Error setTimerProperties();
 
+    /**
+     * @brief Remove timer properties.
+     */
     void removeTimerProperties();
 
+    /**
+     * @brief Is possible create timer.
+     *
+     * @return
+     *   - true: Possible create timer.
+     *   - false: Not possible create timer.
+     */
     bool isPossibleCreateTimer();
 
+    /**
+     * @brief Set timer number.
+     */
     void setTimerNumber();
 
     static constexpr uint8_t MAX_TIMER_COUNT{4};

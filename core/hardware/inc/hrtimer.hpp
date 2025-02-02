@@ -92,7 +92,7 @@ class HrTimer final : public ITimer {
      *
      * @param arg Timer callback data.
      */
-    static void timerCallback(void* arg);
+    static void timerCallback_(void* arg);
 
     /**
      * @brief Set timer properties.
@@ -102,12 +102,12 @@ class HrTimer final : public ITimer {
      *   - common::Error::FAIL: Fail.
      *   - common::Error::INVALID_STATE: Timer is not exist.
      */
-    common::Error setTimerProperties();
+    common::Error setTimerProperties_();
 
     /**
      * @brief Remove timer properties.
      */
-    void removeTimerProperties();
+    void removeTimerProperties_();
 
     /**
      * @brief Is possible create timer.
@@ -116,12 +116,12 @@ class HrTimer final : public ITimer {
      *   - true: Possible create timer.
      *   - false: Not possible create timer.
      */
-    bool isPossibleCreateTimer();
+    bool isPossibleCreateTimer_();
 
     /**
      * @brief Set timer number.
      */
-    void setTimerNumber();
+    void setTimerNumber_();
 
     static constexpr uint8_t MAX_TIMER_COUNT{4};
     static constexpr std::string_view INVALID_NAME{"Timer not exist"};

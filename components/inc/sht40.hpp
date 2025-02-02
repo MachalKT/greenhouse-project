@@ -73,7 +73,7 @@ class Sht40 final : public ITemperatureSensor, public IHumiditySensor {
      *    - Temperature in Celsius or Humidity in RH.
      *    - INVALID_VALUE: Fail.
      */
-    float takeMeasurement(Parameter parameter);
+    float takeMeasurement_(Parameter parameter);
 
     /**
      * @brief Calculate temperature in Celsius.
@@ -82,7 +82,7 @@ class Sht40 final : public ITemperatureSensor, public IHumiditySensor {
      *
      * @return Temperature in Celsius.
      */
-    float calculateTemperatureC(const uint16_t data);
+    float calculateTemperatureC_(const uint16_t data);
 
     /**
      * @brief Calculate humidity in RH.
@@ -91,7 +91,7 @@ class Sht40 final : public ITemperatureSensor, public IHumiditySensor {
      *
      * @return Humidity in RH.
      */
-    float calculateHumidityRh(const uint16_t data);
+    float calculateHumidityRh_(const uint16_t data);
 
     static constexpr uint8_t ADDRESS{0x44};
     static constexpr uint8_t RESET_COMMAND{0x94};

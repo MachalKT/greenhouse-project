@@ -129,7 +129,7 @@ class Gpio {
      *   - common::Error::OK: Success.
      *   - common::Error::FAIL: Fail.
      */
-    common::Error setIsrService();
+    common::Error setIsrService_();
 
     static constexpr int8_t PIN_NOT_ASSIGN{-1};
     static constexpr int8_t PIN_FIRST_NUMBER{0};

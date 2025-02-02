@@ -4,33 +4,38 @@
 
 namespace hw {
 
-std::vector<Gpio::Pin> Gpio::usedPins_{};
+std::vector<common::PinNumber> Gpio::usedPinNumbers_{};
 
-Gpio::Gpio(Pin pin) {
-  if (usedPins_.empty()) {
-    pin_ = pin;
-    usedPins_.push_back(pin_);
+Gpio::Gpio(common::PinNumber pinNumber) {
+  if (pinNumber < PIN_FIRST_NUMBER or pinNumber > PIN_LAST_NUMBER) {
+    pinNumber_ = PIN_NOT_ASSIGN;
     return;
   }
 
-  for (auto& usedPin : usedPins_) {
-    if (usedPin == pin) {
-      pin_ = Pin::PIN_NOT_ASSIGN;
+  if (usedPinNumbers_.empty()) {
+    pinNumber_ = pinNumber;
+    usedPinNumbers_.push_back(pinNumber_);
+    return;
+  }
+
+  for (auto& usedPin : usedPinNumbers_) {
+    if (usedPin == pinNumber) {
+      pinNumber_ = PIN_NOT_ASSIGN;
       return;
     }
   }
 
-  pin_ = pin;
-  usedPins_.push_back(pin_);
+  pinNumber_ = pinNumber;
+  usedPinNumbers_.push_back(pinNumber_);
 }
 
 common::Error Gpio::setMode(const Mode mode) {
-  if (pin_ == Pin::PIN_NOT_ASSIGN) {
+  if (pinNumber_ == PIN_NOT_ASSIGN) {
     return common::Error::INVALID_STATE;
   }
 
-  esp_err_t espErrorCode = gpio_set_direction(static_cast<gpio_num_t>(pin_),
-                                              static_cast<gpio_mode_t>(mode));
+  esp_err_t espErrorCode = gpio_set_direction(
+      static_cast<gpio_num_t>(pinNumber_), static_cast<gpio_mode_t>(mode));
   if (espErrorCode != ESP_OK) {
     return common::Error::FAIL;
   }
@@ -43,7 +48,7 @@ common::Error Gpio::setLevel(const Level level) {
     return common::Error::INVALID_STATE;
   }
 
-  esp_err_t espErrorCode = gpio_set_level(static_cast<gpio_num_t>(pin_),
+  esp_err_t espErrorCode = gpio_set_level(static_cast<gpio_num_t>(pinNumber_),
                                           static_cast<uint32_t>(level));
   if (espErrorCode != ESP_OK) {
     return common::Error::FAIL;
@@ -54,7 +59,7 @@ common::Error Gpio::setLevel(const Level level) {
 
 common::Error Gpio::configurePullUpDown(const bool pullUpEnable,
                                         const bool pullDownEnable) {
-  if (pin_ == Pin::PIN_NOT_ASSIGN) {
+  if (pinNumber_ == PIN_NOT_ASSIGN) {
     return common::Error::INVALID_STATE;
   }
 
@@ -68,7 +73,7 @@ common::Error Gpio::configurePullUpDown(const bool pullUpEnable,
   }
 
   esp_err_t espErrorCode =
-      gpio_set_pull_mode(static_cast<gpio_num_t>(pin_), pullMode);
+      gpio_set_pull_mode(static_cast<gpio_num_t>(pinNumber_), pullMode);
   if (espErrorCode != ESP_OK) {
     return common::Error::FAIL;
   }
@@ -77,19 +82,20 @@ common::Error Gpio::configurePullUpDown(const bool pullUpEnable,
 }
 
 Gpio::Level Gpio::getLevel() const {
-  if (pin_ == Pin::PIN_NOT_ASSIGN) {
+  if (pinNumber_ == PIN_NOT_ASSIGN) {
     return Level::LOW;
   }
 
-  return static_cast<Level>(gpio_get_level(static_cast<gpio_num_t>(pin_)));
+  return static_cast<Level>(
+      gpio_get_level(static_cast<gpio_num_t>(pinNumber_)));
 }
 
-Gpio::Pin Gpio::getPin() const { return pin_; }
+common::PinNumber Gpio::getPin() const { return pinNumber_; }
 
 common::Error Gpio::setInterrupt(const InterruptType interruptType,
                                  common::Callback interruptCallback,
                                  common::CallbackData callbackData) {
-  if (pin_ == Pin::PIN_NOT_ASSIGN) {
+  if (pinNumber_ == PIN_NOT_ASSIGN) {
     return common::Error::INVALID_STATE;
   }
 
@@ -103,13 +109,13 @@ common::Error Gpio::setInterrupt(const InterruptType interruptType,
   }
 
   esp_err_t espErrorCode =
-      gpio_set_intr_type(static_cast<gpio_num_t>(pin_),
+      gpio_set_intr_type(static_cast<gpio_num_t>(pinNumber_),
                          static_cast<gpio_int_type_t>(interruptType));
   if (espErrorCode != ESP_OK) {
     return common::Error::FAIL;
   }
 
-  espErrorCode = gpio_isr_handler_add(static_cast<gpio_num_t>(pin_),
+  espErrorCode = gpio_isr_handler_add(static_cast<gpio_num_t>(pinNumber_),
                                       interruptCallback, callbackData);
   if (espErrorCode != ESP_OK) {
     return common::Error::FAIL;
@@ -131,5 +137,7 @@ common::Error Gpio::setIsrService() {
   isInterruptEnabled_ = true;
   return common::Error::OK;
 }
+
+bool Gpio::isPinAssigned() const { return pinNumber_ != PIN_NOT_ASSIGN; }
 
 } // namespace hw

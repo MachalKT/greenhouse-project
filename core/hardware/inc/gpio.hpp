@@ -2,11 +2,35 @@
 #include <cstdint>
 #include <vector>
 
+#include "interfaces/igpio.hpp"
 #include "types.hpp"
 
 namespace hw {
-class Gpio {
+namespace gpio {
+enum class Mode : uint8_t {
+  DISABLE = 0,
+  INPUT,
+  OUTPUT,
+};
+
+enum class Level : uint8_t {
+  LOW = 0,
+  HIGH,
+};
+
+enum class InterruptType : uint8_t {
+  DISABLE = 0,
+  RISING_EDGE,
+  FALLING_EDGE,
+  RISING_AND_FALLING_EDGE,
+  LOW_LEVEL,
+  HIGH_LEVEL,
+};
+} // namespace gpio
+
+class Gpio final : public IGpio {
   public:
+<<<<<<< HEAD
     /**
      * @brief Gpio mode.
      */
@@ -64,6 +88,13 @@ class Gpio {
      *   - common::Error::INVALID_STATE: Pin is not set in output mode.
      */
     common::Error setLevel(const Level level);
+=======
+    explicit Gpio(const gpio::PinNumber pinNumber);
+
+    common::Error setMode(const gpio::Mode mode) override;
+
+    common::Error setLevel(const gpio::Level level) override;
+>>>>>>> 6482b77 (added gpio interface)
 
     /**
      * @brief Configure pull up or pull down resistor.
@@ -77,8 +108,9 @@ class Gpio {
      *   - common::Error::INVALID_STATE: Pin is not assigned.
      */
     common::Error configurePullUpDown(const bool pullUpEnable,
-                                      const bool pullDownEnable);
+                                      const bool pullDownEnable) override;
 
+<<<<<<< HEAD
     /**
      * @brief Get gpio level.
      *
@@ -112,9 +144,17 @@ class Gpio {
      *   - common::Error::INVALID_STATE: Pin is not assigned.
      */
     common::Error setInterrupt(const InterruptType interruptType,
-                               common::Callback interruptCallback,
-                               common::CallbackData callbackData);
+=======
+    gpio::Level getLevel() const override;
 
+    gpio::PinNumber getPin() const override;
+
+    common::Error setInterrupt(const gpio::InterruptType interruptType,
+>>>>>>> 6482b77 (added gpio interface)
+                               common::Callback interruptCallback,
+                               common::CallbackData callbackData) override;
+
+<<<<<<< HEAD
 <<<<<<< HEAD
     /**
      * @brief Is pin assigned.
@@ -137,6 +177,9 @@ class Gpio {
 
 =======
     bool isPinAssigned() const;
+=======
+    bool isPinAssigned() const override;
+>>>>>>> 6482b77 (added gpio interface)
 
   private:
     common::Error setIsrService();
@@ -145,10 +188,10 @@ class Gpio {
     static constexpr int8_t PIN_NOT_ASSIGN{-1};
     static constexpr int8_t PIN_FIRST_NUMBER{0};
     static constexpr int8_t PIN_LAST_NUMBER{33};
-    static std::vector<common::PinNumber> usedPinNumbers_;
+    static std::vector<gpio::PinNumber> usedPinNumbers_;
     bool isInterruptEnabled_{false};
     int8_t pinNumber_{PIN_NOT_ASSIGN};
-    Mode mode_{Mode::DISABLE};
+    gpio::Mode mode_{gpio::Mode::DISABLE};
 };
 
 } // namespace hw

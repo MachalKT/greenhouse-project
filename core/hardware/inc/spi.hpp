@@ -4,45 +4,40 @@
 
 #include <cstdint>
 
-#include "gpio.hpp"
 #include "types.hpp"
 
 namespace hw {
+namespace spi {
+enum class Host : uint8_t { SPI, HSPI, VSPI };
+
+enum class DmaChannel : uint8_t {
+  DISABLED,
+  CHANNEL_1,
+  CHANNEL_2,
+  CHANNEL_3,
+  AUTO,
+};
+
+} // namespace spi
+
 class Spi final : public ISpi {
   public:
-    enum class Host : uint8_t { SPI, HSPI, VSPI };
-
-    enum class DmaChannel : uint8_t {
-      DISABLED,
-      CHANNEL_1,
-      CHANNEL_2,
-      CHANNEL_3,
-      AUTO,
-    };
-
     struct Config {
-        Gpio& miso;
-        Gpio& mosi;
-        Gpio& sck;
-        Host host;
+        IGpio& miso;
+        IGpio& mosi;
+        IGpio& sck;
+        spi::Host host;
     };
 
-    Spi(Config config);
+    Spi(Spi::Config config);
 
-    common::Error init(const DmaChannel dmaChannel);
+    common::Error init(const spi::DmaChannel dmaChannel);
 
-    common::Error addDevice(spi::DeviceHandle& deviceHandle,
-                            const common::PinNumber csPin,
+    common::Error addDevice(spi::DeviceHandle& deviceHandle, IGpio& csPin,
                             const int clockSpeedHz) override;
 
     common::Error write(spi::DeviceHandle& deviceHandle, int registerAddress,
-                        const uint32_t* data, size_t dataLength) override;
-
-    common::Error write(spi::DeviceHandle& deviceHandle, int registerAddress,
                         const uint8_t* buffer, size_t bufferLength) override;
-
-    common::Error read(spi::DeviceHandle& deviceHandle, int registerAddress,
-                       uint32_t* data, size_t dataLength) override;
 
     common::Error read(spi::DeviceHandle& deviceHandle, int registerAddress,
                        uint8_t* buffer, size_t bufferLength) override;

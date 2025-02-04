@@ -4,9 +4,9 @@
 
 namespace hw {
 
-std::vector<common::PinNumber> Gpio::usedPinNumbers_{};
+std::vector<gpio::PinNumber> Gpio::usedPinNumbers_{};
 
-Gpio::Gpio(common::PinNumber pinNumber) {
+Gpio::Gpio(gpio::PinNumber pinNumber) {
   if (pinNumber < PIN_FIRST_NUMBER or pinNumber > PIN_LAST_NUMBER) {
     pinNumber_ = PIN_NOT_ASSIGN;
     return;
@@ -29,7 +29,7 @@ Gpio::Gpio(common::PinNumber pinNumber) {
   usedPinNumbers_.push_back(pinNumber_);
 }
 
-common::Error Gpio::setMode(const Mode mode) {
+common::Error Gpio::setMode(const gpio::Mode mode) {
   if (pinNumber_ == PIN_NOT_ASSIGN) {
     return common::Error::INVALID_STATE;
   }
@@ -43,8 +43,8 @@ common::Error Gpio::setMode(const Mode mode) {
   return common::Error::OK;
 }
 
-common::Error Gpio::setLevel(const Level level) {
-  if (mode_ != Mode::OUTPUT) {
+common::Error Gpio::setLevel(const gpio::Level level) {
+  if (mode_ != gpio::Mode::OUTPUT) {
     return common::Error::INVALID_STATE;
   }
 
@@ -81,18 +81,18 @@ common::Error Gpio::configurePullUpDown(const bool pullUpEnable,
   return common::Error::OK;
 }
 
-Gpio::Level Gpio::getLevel() const {
+gpio::Level Gpio::getLevel() const {
   if (pinNumber_ == PIN_NOT_ASSIGN) {
-    return Level::LOW;
+    return gpio::Level::LOW;
   }
 
-  return static_cast<Level>(
+  return static_cast<gpio::Level>(
       gpio_get_level(static_cast<gpio_num_t>(pinNumber_)));
 }
 
-common::PinNumber Gpio::getPin() const { return pinNumber_; }
+gpio::PinNumber Gpio::getPin() const { return pinNumber_; }
 
-common::Error Gpio::setInterrupt(const InterruptType interruptType,
+common::Error Gpio::setInterrupt(const gpio::InterruptType interruptType,
                                  common::Callback interruptCallback,
                                  common::CallbackData callbackData) {
   if (pinNumber_ == PIN_NOT_ASSIGN) {

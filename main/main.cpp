@@ -24,22 +24,11 @@ void app_main(void) {
   hw::Gpio miso{19};
   hw::Gpio mosi{23};
   hw::Gpio sck{18};
-  hw::Spi spi{{miso, mosi, sck, hw::Spi::Host::VSPI}};
+  hw::Spi spi{{miso, mosi, sck, hw::spi::Host::VSPI}};
 
-  common::Error error = spi.init(hw::Spi::DmaChannel::CHANNEL_1);
+  common::Error error = spi.init(hw::spi::DmaChannel::CHANNEL_1);
   if (error != common::Error::OK) {
     ESP_LOGE(TAG, "spi init fail");
-  }
-
-  hw::Gpio cs{5};
-  hw::spi::DeviceHandle deviceHandle{nullptr};
-  error = spi.addDevice(deviceHandle, cs.getPin(), hw::Spi::CLOCK_SPEED_HZ);
-  if (error != common::Error::OK) {
-    ESP_LOGE(TAG, "spi add device fail");
-  }
-
-  if (deviceHandle == nullptr) {
-    ESP_LOGE(TAG, "device handle is null");
   }
 
   hw::I2c i2c;

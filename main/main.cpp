@@ -3,10 +3,12 @@
 #include "esp_log.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
+#include "gpio.hpp"
 #include "hrtimer.hpp"
 #include "i2c.hpp"
 #include "sensorscontroller.hpp"
 #include "sht40.hpp"
+#include "spi.hpp"
 #include "utils.hpp"
 
 namespace {
@@ -18,6 +20,16 @@ static constexpr common::Time MEASUREMENT_TIME_US{
 
 extern "C" {
 void app_main(void) {
+
+  hw::Gpio miso{19};
+  hw::Gpio mosi{23};
+  hw::Gpio sck{18};
+  hw::Spi spi{{miso, mosi, sck, hw::spi::Host::VSPI}};
+
+  common::Error error = spi.init(hw::spi::DmaChannel::CHANNEL_1);
+  if (error != common::Error::OK) {
+    ESP_LOGE(TAG, "spi init fail");
+  }
 
   hw::I2c i2c;
   common::Error errorCode = i2c.init();

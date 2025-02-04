@@ -4,7 +4,6 @@
 #include <functional>
 
 namespace common {
-using PinNumber = int8_t;
 using Time = uint64_t;
 using Callback = void (*)(void*);
 using CallbackData = void*;

@@ -140,6 +140,4 @@ common::Error Gpio::setIsrService_() {
   return common::Error::OK;
 }
 
-bool Gpio::isPinAssigned() const { return pinNumber_ != PIN_NOT_ASSIGN; }
-
 } // namespace hw

@@ -1,46 +1,43 @@
-#include "sensorscontroller.hpp"
+#include "timedmeter.hpp"
 
 #include "esp_log.h"
 
 namespace {
-const char* TAG = "SensorsController";
+const char* TAG = "TimedMeter";
 }
 
 namespace app {
-SensorsController::SensorsController(Config config) : config_{config} {
+TimedMeter::TimedMeter(Config config) : config_{config} {
   config.measurementTimer.setCallback(
       [](void* arg) {
         if (not arg) {
           return;
         }
 
-        SensorsController* sensorController =
-            static_cast<SensorsController*>(arg);
+        TimedMeter* sensorController = static_cast<TimedMeter*>(arg);
         sensorController->isReadyToMeasure_ = true;
       },
       this);
 }
 
-common::Error SensorsController::start(common::Time timeUs) {
+common::Error TimedMeter::start(common::Time timeUs) {
   return config_.measurementTimer.startPeriodic(timeUs);
 }
 
-common::Error SensorsController::stop() {
-  return config_.measurementTimer.stop();
-}
+common::Error TimedMeter::stop() { return config_.measurementTimer.stop(); }
 
-common::MeasurementValues SensorsController::getMeasurementValues() {
+common::MeasurementData TimedMeter::getMeasurementData() {
   return measurementValues_;
 }
 
-void SensorsController::yield() {
+void TimedMeter::yield() {
   if (isReadyToMeasure_) {
     isReadyToMeasure_ = false;
-    takeMeasurement();
+    takeMeasurement_();
   }
 }
 
-void SensorsController::takeMeasurement() {
+void TimedMeter::takeMeasurement_() {
   measurementValues_.temperatureC = config_.temperatureSensor.getTemperatureC();
   measurementValues_.humidityRh = config_.humiditySensor.getHumidityRh();
 

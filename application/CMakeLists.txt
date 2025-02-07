@@ -1,9 +1,7 @@
-set(SRC src/sensorscontroller.cpp)
-
-set(INC inc ${PROJECT_DIR}/common)
+set(SRC src/timedmeter.cpp)
 
 idf_component_register(
     SRCS ${SRC}
-    INCLUDE_DIRS ${INC}
-    REQUIRES components
+    INCLUDE_DIRS inc
+    REQUIRES components common
 )

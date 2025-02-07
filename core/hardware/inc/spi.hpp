@@ -40,6 +40,8 @@ class Spi final : public ISpi {
 
     /**
      * @brief Construct a new Spi object.
+     *
+     * @param cofig Config.
      */
     Spi(Spi::Config config);
 

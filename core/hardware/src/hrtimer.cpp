@@ -33,8 +33,8 @@ common::Error HrTimer::deinit() {
     return common::Error::OK;
   }
 
-  esp_err_t errorCode = esp_timer_delete(handle_);
-  if (errorCode != ESP_OK) {
+  esp_err_t espErrorCode = esp_timer_delete(handle_);
+  if (espErrorCode != ESP_OK) {
     stop();
     esp_timer_delete(handle_);
   }
@@ -49,12 +49,12 @@ void HrTimer::setCallback(common::Callback cb, common::CallbackData data) {
 }
 
 common::Error HrTimer::startOnce(const common::Time timeUs) {
-  esp_err_t errorCode = esp_timer_start_once(handle_, timeUs);
-  if (errorCode == ESP_ERR_INVALID_STATE) {
-    errorCode = esp_timer_restart(handle_, timeUs);
+  esp_err_t espErrorCode = esp_timer_start_once(handle_, timeUs);
+  if (espErrorCode == ESP_ERR_INVALID_STATE) {
+    espErrorCode = esp_timer_restart(handle_, timeUs);
   }
 
-  if (errorCode != ESP_OK) {
+  if (espErrorCode != ESP_OK) {
     return common::Error::FAIL;
   }
 
@@ -62,12 +62,12 @@ common::Error HrTimer::startOnce(const common::Time timeUs) {
 }
 
 common::Error HrTimer::startPeriodic(const common::Time timeUs) {
-  esp_err_t errorCode = esp_timer_start_periodic(handle_, timeUs);
-  if (errorCode == ESP_ERR_INVALID_STATE) {
-    errorCode = esp_timer_restart(handle_, timeUs);
+  esp_err_t espErrorCode = esp_timer_start_periodic(handle_, timeUs);
+  if (espErrorCode == ESP_ERR_INVALID_STATE) {
+    espErrorCode = esp_timer_restart(handle_, timeUs);
   }
 
-  if (errorCode != ESP_OK) {
+  if (espErrorCode != ESP_OK) {
     return common::Error::FAIL;
   }
 

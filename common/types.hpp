@@ -15,7 +15,7 @@ enum class Error : uint8_t {
   INVALID_STATE,
 };
 
-struct MeasurementValues {
+struct MeasurementData {
     float temperatureC{0.0f};
     float humidityRh{0.0f};
 };

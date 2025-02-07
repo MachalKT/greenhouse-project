@@ -6,9 +6,9 @@
 #include "gpio.hpp"
 #include "hrtimer.hpp"
 #include "i2c.hpp"
-#include "sensorscontroller.hpp"
 #include "sht40.hpp"
 #include "spi.hpp"
+#include "timedmeter.hpp"
 #include "utils.hpp"
 
 namespace {
@@ -37,7 +37,7 @@ void app_main(void) {
     ESP_LOGE(TAG, "i2c init fail");
   }
 
-  Sht40 sht40{i2c};
+  sensor::Sht40 sht40{i2c};
   errorCode = sht40.init();
   if (errorCode != common::Error::OK) {
     ESP_LOGE(TAG, "sht init fail");
@@ -49,12 +49,12 @@ void app_main(void) {
     ESP_LOGE(TAG, "Measurement timer init fail");
   }
 
-  app::SensorsController sensorsController{{measurementTimer, sht40, sht40}};
-  sensorsController.start(MEASUREMENT_TIME_US);
+  app::TimedMeter timedMeter{{measurementTimer, sht40, sht40}};
+  timedMeter.start(MEASUREMENT_TIME_US);
 
   while (1) {
-    sensorsController.yield();
-    sw::delayMs(1000);
+    timedMeter.yield();
+    sw::delayMs(10);
   }
 }
 }

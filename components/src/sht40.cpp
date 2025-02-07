@@ -2,6 +2,7 @@
 
 #include <array>
 
+namespace sensor {
 Sht40::Sht40(hw::II2c& i2c) : i2c_{i2c} {}
 
 common::Error Sht40::init() {
@@ -14,7 +15,9 @@ common::Error Sht40::init() {
   return common::Error::OK;
 }
 
-void Sht40::setPrecision(const Precision precision) { precision_ = precision; }
+void Sht40::setPrecision(const sht40::Precision precision) {
+  precision_ = precision;
+}
 
 float Sht40::getTemperatureC() {
   return takeMeasurement_(Parameter::TEMPERATURE);
@@ -53,3 +56,5 @@ float Sht40::calculateTemperatureC_(const uint16_t data) {
 float Sht40::calculateHumidityRh_(const uint16_t data) {
   return -6.0f + 125.0f * static_cast<float>(data) / 65535.0f;
 }
+
+} // namespace sensor

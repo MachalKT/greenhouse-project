@@ -41,6 +41,8 @@ class Gpio final : public IGpio {
   public:
     /**
      * @brief Construct a new Gpio object.
+     *
+     * @param pinNumber Pin number.
      */
     explicit Gpio(const gpio::PinNumber pinNumber);
 

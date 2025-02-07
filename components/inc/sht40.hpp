@@ -7,13 +7,16 @@
 #include "interfaces/isensors.hpp"
 #include "types.hpp"
 
+namespace sensor {
+namespace sht40 {
+/**
+ * @brief Sht40 precision.
+ */
+enum class Precision { HIGH = 0xFD, MEDIUM = 0xF6, LOW = 0xE0 };
+} // namespace sht40
+
 class Sht40 final : public ITemperatureSensor, public IHumiditySensor {
   public:
-    /**
-     * @brief Sht40 precision.
-     */
-    enum class Precision { HIGH = 0xFD, MEDIUM = 0xF6, LOW = 0xE0 };
-
     /**
      * @brief Construct a new Sht40 object.
      *
@@ -35,7 +38,7 @@ class Sht40 final : public ITemperatureSensor, public IHumiditySensor {
      *
      * @param precision Precision.
      */
-    void setPrecision(const Precision precision);
+    void setPrecision(const sht40::Precision precision);
 
     /**
      * @brief Get temperature in Celsius.
@@ -99,5 +102,6 @@ class Sht40 final : public ITemperatureSensor, public IHumiditySensor {
     static constexpr float INVALID_VALUE{std::numeric_limits<float>::max()};
 
     hw::II2c& i2c_;
-    Precision precision_{Precision::HIGH};
+    sht40::Precision precision_{sht40::Precision::HIGH};
 };
+} // namespace sensor

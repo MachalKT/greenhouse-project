@@ -4,38 +4,38 @@
 
 namespace hw {
 
-std::vector<gpio::PinNumber> Gpio::usedPinNumbers_{};
+std::vector<gpio::Number> Gpio::usedGpioNumbers_{};
 
-Gpio::Gpio(gpio::PinNumber pinNumber) {
-  if (pinNumber < PIN_FIRST_NUMBER or pinNumber > PIN_LAST_NUMBER) {
-    pinNumber_ = PIN_NOT_ASSIGN;
+Gpio::Gpio(gpio::Number number) {
+  if (number < FIRST_NUMBER or number > LAST_NUMBER) {
+    number_ = gpio::INVALID_NUMBER;
     return;
   }
 
-  if (usedPinNumbers_.empty()) {
-    pinNumber_ = pinNumber;
-    usedPinNumbers_.push_back(pinNumber_);
+  if (usedGpioNumbers_.empty()) {
+    number_ = number;
+    usedGpioNumbers_.push_back(number_);
     return;
   }
 
-  for (auto& usedPin : usedPinNumbers_) {
-    if (usedPin == pinNumber) {
-      pinNumber_ = PIN_NOT_ASSIGN;
+  for (auto& usedNumber : usedGpioNumbers_) {
+    if (usedNumber == number) {
+      number_ = gpio::INVALID_NUMBER;
       return;
     }
   }
 
-  pinNumber_ = pinNumber;
-  usedPinNumbers_.push_back(pinNumber_);
+  number_ = number;
+  usedGpioNumbers_.push_back(number_);
 }
 
 common::Error Gpio::setMode(const gpio::Mode mode) {
-  if (pinNumber_ == PIN_NOT_ASSIGN) {
+  if (number_ == gpio::INVALID_NUMBER) {
     return common::Error::INVALID_STATE;
   }
 
-  esp_err_t espErrorCode = gpio_set_direction(
-      static_cast<gpio_num_t>(pinNumber_), static_cast<gpio_mode_t>(mode));
+  esp_err_t espErrorCode = gpio_set_direction(static_cast<gpio_num_t>(number_),
+                                              static_cast<gpio_mode_t>(mode));
   if (espErrorCode != ESP_OK) {
     return common::Error::FAIL;
   }
@@ -48,7 +48,7 @@ common::Error Gpio::setLevel(const gpio::Level level) {
     return common::Error::INVALID_STATE;
   }
 
-  esp_err_t espErrorCode = gpio_set_level(static_cast<gpio_num_t>(pinNumber_),
+  esp_err_t espErrorCode = gpio_set_level(static_cast<gpio_num_t>(number_),
                                           static_cast<uint32_t>(level));
   if (espErrorCode != ESP_OK) {
     return common::Error::FAIL;
@@ -59,7 +59,7 @@ common::Error Gpio::setLevel(const gpio::Level level) {
 
 common::Error Gpio::configurePullUpDown(const bool pullUpEnable,
                                         const bool pullDownEnable) {
-  if (pinNumber_ == PIN_NOT_ASSIGN) {
+  if (number_ == gpio::INVALID_NUMBER) {
     return common::Error::INVALID_STATE;
   }
 
@@ -73,7 +73,7 @@ common::Error Gpio::configurePullUpDown(const bool pullUpEnable,
   }
 
   esp_err_t espErrorCode =
-      gpio_set_pull_mode(static_cast<gpio_num_t>(pinNumber_), pullMode);
+      gpio_set_pull_mode(static_cast<gpio_num_t>(number_), pullMode);
   if (espErrorCode != ESP_OK) {
     return common::Error::FAIL;
   }
@@ -82,20 +82,20 @@ common::Error Gpio::configurePullUpDown(const bool pullUpEnable,
 }
 
 gpio::Level Gpio::getLevel() const {
-  if (pinNumber_ == PIN_NOT_ASSIGN) {
+  if (number_ == gpio::INVALID_NUMBER) {
     return gpio::Level::LOW;
   }
 
   return static_cast<gpio::Level>(
-      gpio_get_level(static_cast<gpio_num_t>(pinNumber_)));
+      gpio_get_level(static_cast<gpio_num_t>(number_)));
 }
 
-gpio::PinNumber Gpio::getPin() const { return pinNumber_; }
+gpio::Number Gpio::getNumber() const { return number_; }
 
 common::Error Gpio::setInterrupt(const gpio::InterruptType interruptType,
                                  common::Callback interruptCallback,
                                  common::CallbackData callbackData) {
-  if (pinNumber_ == PIN_NOT_ASSIGN) {
+  if (number_ == gpio::INVALID_NUMBER) {
     return common::Error::INVALID_STATE;
   }
 
@@ -109,13 +109,13 @@ common::Error Gpio::setInterrupt(const gpio::InterruptType interruptType,
   }
 
   esp_err_t espErrorCode =
-      gpio_set_intr_type(static_cast<gpio_num_t>(pinNumber_),
+      gpio_set_intr_type(static_cast<gpio_num_t>(number_),
                          static_cast<gpio_int_type_t>(interruptType));
   if (espErrorCode != ESP_OK) {
     return common::Error::FAIL;
   }
 
-  espErrorCode = gpio_isr_handler_add(static_cast<gpio_num_t>(pinNumber_),
+  espErrorCode = gpio_isr_handler_add(static_cast<gpio_num_t>(number_),
                                       interruptCallback, callbackData);
   if (espErrorCode != ESP_OK) {
     return common::Error::FAIL;
@@ -124,7 +124,7 @@ common::Error Gpio::setInterrupt(const gpio::InterruptType interruptType,
   return common::Error::OK;
 }
 
-bool Gpio::isPinAssigned() const { return pinNumber_ != PIN_NOT_ASSIGN; }
+bool Gpio::isGpioAssigned() const { return number_ != gpio::INVALID_NUMBER; }
 
 common::Error Gpio::setIsrService_() {
   if (isInterruptEnabled_) {

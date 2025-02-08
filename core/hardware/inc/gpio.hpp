@@ -42,12 +42,12 @@ class Gpio final : public IGpio {
     /**
      * @brief Construct a new Gpio object.
      *
-     * @param pinNumber Pin number.
+     * @param number Gpio number.
      */
-    explicit Gpio(const gpio::PinNumber pinNumber);
+    explicit Gpio(const gpio::Number number);
 
     /**
-     * @brief gpio set mode.Gpio can be set to input or output mode.
+     * @brief Gpio set mode.Gpio can be set to input or output mode.
      *
      * @param mode Gpio mode.
      *
@@ -95,12 +95,12 @@ class Gpio final : public IGpio {
     gpio::Level getLevel() const override;
 
     /**
-     * @brief Get pin number.
-     * @note if pin is not assigned, return PIN_NOT_ASSIGN (-1).
+     * @brief Get gpio number.
+     * @note If pin is not assigned, return INVALID_NUMBER (-1).
      *
-     * @return common::PinNumber Pin number.
+     * @return gpio::Number: Gpio number.
      */
-    gpio::PinNumber getPin() const override;
+    gpio::Number getNumber() const override;
 
     /**
      * @brief Set interrupt.
@@ -119,13 +119,13 @@ class Gpio final : public IGpio {
                                common::CallbackData callbackData) override;
 
     /**
-     * @brief Is pin assigned.
+     * @brief Is gpio assigned.
      *
      * @return
-     *   - true: Pin is assigned.
-     *   - false: Pin is not assigned.
+     *   - true: Gpio is assigned.
+     *   - false: Gpio is not assigned.
      */
-    bool isPinAssigned() const override;
+    bool isGpioAssigned() const override;
 
   private:
     /**
@@ -137,12 +137,11 @@ class Gpio final : public IGpio {
      */
     common::Error setIsrService_();
 
-    static constexpr int8_t PIN_NOT_ASSIGN{-1};
-    static constexpr int8_t PIN_FIRST_NUMBER{0};
-    static constexpr int8_t PIN_LAST_NUMBER{33};
-    static std::vector<gpio::PinNumber> usedPinNumbers_;
+    static constexpr int8_t FIRST_NUMBER{0};
+    static constexpr int8_t LAST_NUMBER{39};
+    static std::vector<gpio::Number> usedGpioNumbers_;
     bool isInterruptEnabled_{false};
-    int8_t pinNumber_{PIN_NOT_ASSIGN};
+    int8_t number_{gpio::INVALID_NUMBER};
     gpio::Mode mode_{gpio::Mode::DISABLE};
 };
 

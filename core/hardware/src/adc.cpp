@@ -62,7 +62,7 @@ float Adc::readVoltage() {
     return 0.f;
   }
 
-  return (static_cast<float>(adcValue) * 3.3f) /
+  return (static_cast<float>(adcValue) * MAX_MEASURABLE_INPUT_V) /
          std::pow(2.f, static_cast<float>(config_.bitWidth));
 }
 

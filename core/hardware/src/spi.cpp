@@ -7,9 +7,9 @@ namespace hw {
 Spi::Spi(Config config) : config_{config} {}
 
 common::Error Spi::init(const spi::DmaChannel dmaChannel) {
-  if (config_.mosi.isPinAssigned() == false or
-      config_.miso.isPinAssigned() == false or
-      config_.sck.isPinAssigned() == false) {
+  if (config_.mosi.isGpioAssigned() == false or
+      config_.miso.isGpioAssigned() == false or
+      config_.sck.isGpioAssigned() == false) {
     return common::Error::FAIL;
   }
 
@@ -21,9 +21,9 @@ common::Error Spi::init(const spi::DmaChannel dmaChannel) {
   }
 
   spi_bus_config_t busConfig{};
-  busConfig.miso_io_num = static_cast<int>(config_.miso.getPin());
-  busConfig.mosi_io_num = static_cast<int>(config_.mosi.getPin());
-  busConfig.sclk_io_num = static_cast<int>(config_.sck.getPin());
+  busConfig.miso_io_num = static_cast<int>(config_.miso.getNumber());
+  busConfig.mosi_io_num = static_cast<int>(config_.mosi.getNumber());
+  busConfig.sclk_io_num = static_cast<int>(config_.sck.getNumber());
   busConfig.quadwp_io_num = NOT_USE_WRITE_PROTECT;
   busConfig.quadhd_io_num = NOT_USE_HOLD;
   busConfig.max_transfer_sz = maxTransferSize;
@@ -40,13 +40,13 @@ common::Error Spi::init(const spi::DmaChannel dmaChannel) {
 
 common::Error Spi::addDevice(spi::DeviceHandle& deviceHandle, IGpio& csPin,
                              const int clockSpeedHz) {
-  if (csPin.isPinAssigned() == false) {
+  if (csPin.isGpioAssigned() == false) {
     return common::Error::INVALID_ARG;
   }
 
   spi_device_interface_config_t deviceConfig{};
   deviceConfig.clock_speed_hz = clockSpeedHz;
-  deviceConfig.spics_io_num = static_cast<int>(csPin.getPin());
+  deviceConfig.spics_io_num = static_cast<int>(csPin.getNumber());
   deviceConfig.queue_size = QUEUE_SIZE;
   deviceConfig.command_bits = COMMAND_BITS;
   deviceConfig.address_bits = ADDRESS_BITS;

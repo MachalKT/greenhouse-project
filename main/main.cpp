@@ -1,5 +1,6 @@
 #include <stdio.h>
 
+#include "adc.hpp"
 #include "esp_log.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
@@ -20,21 +21,30 @@ static constexpr common::Time MEASUREMENT_TIME_US{
 
 extern "C" {
 void app_main(void) {
+  common::Error errorCode{common::Error::OK};
 
   hw::Gpio miso{19};
   hw::Gpio mosi{23};
   hw::Gpio sck{18};
   hw::Spi spi{{miso, mosi, sck, hw::spi::Host::VSPI}};
 
-  common::Error error = spi.init(hw::spi::DmaChannel::CHANNEL_1);
-  if (error != common::Error::OK) {
+  errorCode = spi.init(hw::spi::DmaChannel::CHANNEL_1);
+  if (errorCode != common::Error::OK) {
     ESP_LOGE(TAG, "spi init fail");
   }
 
   hw::I2c i2c;
-  common::Error errorCode = i2c.init();
+  errorCode = i2c.init();
   if (errorCode != common::Error::OK) {
     ESP_LOGE(TAG, "i2c init fail");
+  }
+
+  hw::Gpio batteryGpio{32};
+  hw::Adc adc{batteryGpio};
+  errorCode =
+      adc.init(hw::adc::BitWidth::BITWIDTH_12, hw::adc::Attenuation::DB_11);
+  if (errorCode != common::Error::OK) {
+    ESP_LOGE(TAG, "adc init fail");
   }
 
   sensor::Sht40 sht40{i2c};

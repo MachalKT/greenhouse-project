@@ -4,10 +4,11 @@
 
 namespace hw {
 namespace gpio {
-using PinNumber = int8_t;
+using Number = int8_t;
 enum class Mode : uint8_t;
 enum class Level : uint8_t;
 enum class InterruptType : uint8_t;
+static constexpr int8_t INVALID_NUMBER{-1};
 } // namespace gpio
 
 class IGpio {
@@ -21,12 +22,12 @@ class IGpio {
 
     virtual gpio::Level getLevel() const = 0;
 
-    virtual gpio::PinNumber getPin() const = 0;
+    virtual gpio::Number getNumber() const = 0;
 
     virtual common::Error setInterrupt(const gpio::InterruptType interruptType,
                                        common::Callback interruptCallback,
                                        common::CallbackData callbackData) = 0;
 
-    virtual bool isPinAssigned() const = 0;
+    virtual bool isGpioAssigned() const = 0;
 };
 } // namespace hw

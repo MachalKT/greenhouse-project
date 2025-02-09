@@ -18,13 +18,13 @@ namespace adc {
  * @brief Specifies the ADC output bit width.
  */
 enum class BitWidth : uint8_t {
-  DEFAULT = 0, ///< Default ADC output bit width, the maximum available width is
-               ///< selected.
-  BITWIDTH_9 = 9, ///< 9-bit ADC output width.
-  BITWIDTH_10,    ///< 10-bit ADC output width.
-  BITWIDTH_11,    ///< 11-bit ADC output width.
-  BITWIDTH_12,    ///< 12-bit ADC output width.
-  BITWIDTH_13     ///< 13-bit ADC output width.
+  DEFAULT = 0, // Default ADC output bit width, the maximum available width is
+               // selected.
+  BITWIDTH_9 = 9, // 9-bit ADC output width.
+  BITWIDTH_10,    // 10-bit ADC output width.
+  BITWIDTH_11,    // 11-bit ADC output width.
+  BITWIDTH_12,    // 12-bit ADC output width.
+  BITWIDTH_13     // 13-bit ADC output width.
 };
 
 /**
@@ -32,10 +32,10 @@ enum class BitWidth : uint8_t {
  * @brief Specifies the input signal attenuation for ADC.
  */
 enum class Attenuation : uint8_t {
-  DB_0 = 0, ///< No input signal attenuation.
-  DB_2_5,   ///< 2.5 dB attenuation.
-  DB_6,     ///< 6 dB attenuation.
-  DB_11     ///< 11 dB attenuation.
+  DB_0 = 0, // No input signal attenuation.
+  DB_2_5,   // 2.5 dB attenuation.
+  DB_6,     // 6 dB attenuation.
+  DB_11     // 11 dB attenuation.
 };
 } // namespace adc
 

@@ -1,6 +1,6 @@
 #include "hrtimer.hpp"
 
-#include "esp_log.h"
+#include "esp_timer.h"
 
 namespace timer {
 namespace hw {
@@ -19,7 +19,8 @@ common::Error HrTimer::init() {
   timerArgs.arg = this;
   timerArgs.name = name_.data();
 
-  esp_err_t espErrorCode = esp_timer_create(&timerArgs, &handle_);
+  esp_err_t espErrorCode = esp_timer_create(
+      &timerArgs, reinterpret_cast<esp_timer_handle_t*>(&handle_));
   if (espErrorCode != ESP_OK) {
     removeTimerProperties_();
     return common::Error::FAIL;
@@ -33,10 +34,11 @@ common::Error HrTimer::deinit() {
     return common::Error::OK;
   }
 
-  esp_err_t espErrorCode = esp_timer_delete(handle_);
+  esp_err_t espErrorCode =
+      esp_timer_delete(static_cast<esp_timer_handle_t>(handle_));
   if (espErrorCode != ESP_OK) {
     stop();
-    esp_timer_delete(handle_);
+    esp_timer_delete(static_cast<esp_timer_handle_t>(handle_));
   }
   removeTimerProperties_();
 
@@ -49,9 +51,11 @@ void HrTimer::setCallback(common::Callback cb, common::CallbackData data) {
 }
 
 common::Error HrTimer::startOnce(const common::Time timeUs) {
-  esp_err_t espErrorCode = esp_timer_start_once(handle_, timeUs);
+  esp_err_t espErrorCode =
+      esp_timer_start_once(static_cast<esp_timer_handle_t>(handle_), timeUs);
   if (espErrorCode == ESP_ERR_INVALID_STATE) {
-    espErrorCode = esp_timer_restart(handle_, timeUs);
+    espErrorCode =
+        esp_timer_restart(static_cast<esp_timer_handle_t>(handle_), timeUs);
   }
 
   if (espErrorCode != ESP_OK) {
@@ -62,9 +66,11 @@ common::Error HrTimer::startOnce(const common::Time timeUs) {
 }
 
 common::Error HrTimer::startPeriodic(const common::Time timeUs) {
-  esp_err_t espErrorCode = esp_timer_start_periodic(handle_, timeUs);
+  esp_err_t espErrorCode = esp_timer_start_periodic(
+      static_cast<esp_timer_handle_t>(handle_), timeUs);
   if (espErrorCode == ESP_ERR_INVALID_STATE) {
-    espErrorCode = esp_timer_restart(handle_, timeUs);
+    espErrorCode =
+        esp_timer_restart(static_cast<esp_timer_handle_t>(handle_), timeUs);
   }
 
   if (espErrorCode != ESP_OK) {
@@ -75,7 +81,7 @@ common::Error HrTimer::startPeriodic(const common::Time timeUs) {
 }
 
 common::Error HrTimer::stop() {
-  esp_timer_stop(handle_);
+  esp_timer_stop(static_cast<esp_timer_handle_t>(handle_));
   return common::Error::OK;
 }
 

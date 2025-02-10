@@ -3,14 +3,15 @@
 #include <queue>
 #include <string>
 
-#include "esp_timer.h"
 #include "interfaces/itimer.hpp"
 #include "types.hpp"
 
 namespace timer {
 namespace hw {
-using TimerHandle = esp_timer_handle_t;
 
+/**
+ * High Resolution Timer
+ */
 class HrTimer final : public ITimer {
   public:
     /**
@@ -76,6 +77,8 @@ class HrTimer final : public ITimer {
     common::Error stop() override;
 
   private:
+    using TimerHandle = void*;
+
     /**
      * @brief Timer number.
      */

@@ -6,7 +6,7 @@ namespace sw {
 
 ThreadBase::ThreadBase(const Config config) : config_{config} {}
 
-ThreadBase::~ThreadBase() { delete_; }
+ThreadBase::~ThreadBase() { delete_(); }
 
 common::Error ThreadBase::start() {
   if (handle_) {
@@ -28,7 +28,7 @@ common::Error ThreadBase::stop() {
   return common::Error::OK;
 }
 
-void ThreadBase::cleanup_() { delete_; }
+void ThreadBase::cleanup_() { delete_(); }
 
 void ThreadBase::suspend_() {
   vTaskSuspend(static_cast<TaskHandle_t>(handle_));

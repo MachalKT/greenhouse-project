@@ -114,12 +114,6 @@ class ThreadBase {
     /**
      * @brief Main function of the thread, must be implemented in the derived
      * class
-     */
-    virtual void run_() = 0;
-
-    /**
-     * @brief Main function of the thread, must be implemented in the derived
-     * class
      *
      * This function must be an infinite loop to ensure continuous execution.
      * Example implementation:
@@ -131,6 +125,11 @@ class ThreadBase {
      *     }
      * }
      * @endcode
+     */
+    virtual void run_() = 0;
+
+    /**
+     * @brief Cleanup function, called before the thread terminates
      */
     virtual void cleanup_();
 

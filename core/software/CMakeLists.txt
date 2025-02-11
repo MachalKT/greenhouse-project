@@ -1,7 +1,7 @@
-set(SRC src/delay.cpp)
+set(SRC src/delay.cpp src/threadbase.cpp)
 
 idf_component_register(
     SRCS ${SRC}
     INCLUDE_DIRS inc
-    REQUIRES
+    REQUIRES common
 )

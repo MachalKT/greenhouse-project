@@ -18,8 +18,9 @@ A plant monitoring system that collects environmental data such as temperature a
 ## Installation
 
 1. **Install ESP-IDF**  
-   Follow the [ESP-IDF installation guide](https://docs.espressif.com/projects/esp-idf/en/stable/esp32/get-started/index.html#installation) for your operating system.  
-   Before building the project, set up the ESP-IDF environment:
+    Follow the [ESP-IDF installation guide](https://docs.espressif.com/projects/esp-idf/en/stable/esp32/get-started/index.html#installation) for your operating system.  
+   
+On **Linux**, before building the project, configure the ESP-IDF environment:
    ```bash
    . $HOME/esp/esp-idf/export.sh
    ```
@@ -30,18 +31,32 @@ A plant monitoring system that collects environmental data such as temperature a
    cd greenhouse-project
 ```
 3. **Building the project**
+- Greenhouse controller
 ```bash
-   idf.py build
+   idf.py build -C greenhouse-controller
 ```
-4. **Flash device**
+- Hub
 ```bash
-   idf.py -p PORT flash
+   idf.py build -C hub
+```
+
+4. **Flash device**
+- Greenhouse controller
+```bash
+   idf.py -C greenhouse-controller -p PORT flash
+```
+-  Hub
+```bash
+   idf.py -C hub -p PORT flash
 ```
 
 ## Project Structure
-
-- application/ – Application logic
-- common/ – Shared utilities, functions, types
-- components/ – Drivers for components used on the PCB board
-- core/ – Drivers for microcontroller peripherals (e.g., timers, GPIO) and FreeRTOS system functions.
-- main/ – Application entry point
+```
+greenhouse-project/
+│-- application/             # Application logic
+│-- common/                  # Shared utilities (e.g., data types, helper functions)
+│-- components/              # Drivers for components used on the PCB board
+│-- core/                    # Microcontroller-specific drivers (GPIO, timers, FreeRTOS)
+│-- greenhouse-controller/   # Main controller firmware
+│-- hub/                     # Hub firmware
+```

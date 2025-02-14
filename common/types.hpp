@@ -1,18 +1,19 @@
 #pragma once
 
 #include <cstdint>
-#include <functional>
 
 namespace common {
 using Time = uint64_t;
 using Callback = void (*)(void*);
-using CallbackData = void*;
+using Argument = void*;
 
 enum class Error : uint8_t {
   OK,
   FAIL,
   INVALID_ARG,
   INVALID_STATE,
+  NO_MEM,
+  NOT_FOUND,
 };
 
 struct MeasurementData {

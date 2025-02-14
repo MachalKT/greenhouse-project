@@ -94,7 +94,7 @@ gpio::Number Gpio::getNumber() const { return number_; }
 
 common::Error Gpio::setInterrupt(const gpio::InterruptType interruptType,
                                  common::Callback interruptCallback,
-                                 common::CallbackData callbackData) {
+                                 common::Argument callbackData) {
   if (number_ == gpio::INVALID_NUMBER) {
     return common::Error::INVALID_STATE;
   }

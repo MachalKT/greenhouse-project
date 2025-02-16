@@ -71,15 +71,17 @@ common::Error Wifi::restore(const Config config) {
   return common::Error::OK;
 }
 
-common::Error Wifi::setWifiEventHandler(EventHandlerFunction eventHandler) {
+common::Error
+Wifi::setWifiEventHandler(common::event::HandlerFunction eventHandler) {
   esp_err_t espErrorCode = esp_event_handler_instance_register(
-      WIFI_EVENT, ESP_EVENT_ANY_ID, eventHandler, this, NULL);
+      WIFI_EVENT, EVENT_ANY_ID, eventHandler, this, NULL);
   return espErrorCode == ESP_OK ? common::Error::OK : common::Error::FAIL;
 }
 
-common::Error Wifi::setIpEventHandler(EventHandlerFunction eventHandler) {
+common::Error
+Wifi::setIpEventHandler(common::event::HandlerFunction eventHandler) {
   esp_err_t espErrorCode = esp_event_handler_instance_register(
-      IP_EVENT, IP_EVENT_STA_GOT_IP, eventHandler, this, NULL);
+      IP_EVENT, EVENT_ANY_ID, eventHandler, this, NULL);
   return espErrorCode == ESP_OK ? common::Error::OK : common::Error::FAIL;
 }
 
@@ -174,13 +176,35 @@ void Wifi::showConnectedStaList() {
   ESP_LOGI(TAG.data(), "%s", SEPARATOR_STA_LIST.data());
 }
 
-void Wifi::showIp(EventData eventData) {
+void Wifi::showIp(common::event::Data eventData) {
   if (eventData == nullptr) {
     ESP_LOGE(TAG.data(), "IP cannot be read");
   }
 
   ip_event_got_ip_t* eventGotIp = static_cast<ip_event_got_ip_t*>(eventData);
-  ESP_LOGI(TAG.data(), "got ip: " IPSTR, IP2STR(&eventGotIp->ip_info.ip));
+  ESP_LOGI(TAG.data(), "Got ip: " IPSTR, IP2STR(&eventGotIp->ip_info.ip));
+}
+
+void Wifi::showConnectedStaInfo(common::event::Data eventData) {
+  if (eventData == nullptr) {
+    ESP_LOGE(TAG.data(), "Wrong event data");
+  }
+
+  wifi_event_ap_staconnected_t* event =
+      static_cast<wifi_event_ap_staconnected_t*>(eventData);
+  ESP_LOGI("WIFI", "Station " MACSTR " join, AID=%d", MAC2STR(event->mac),
+           event->aid);
+}
+
+void Wifi::showDisconnectedStaInfo(common::event::Data eventData) {
+  if (eventData == nullptr) {
+    ESP_LOGE(TAG.data(), "Wrong event data");
+  }
+
+  wifi_event_ap_stadisconnected_t* event =
+      static_cast<wifi_event_ap_stadisconnected_t*>(eventData);
+  ESP_LOGI("WIFI", "Station " MACSTR " leave, AID=%d, reason=%d",
+           MAC2STR(event->mac), event->aid, event->reason);
 }
 
 common::Error Wifi::preInit_() {

@@ -11,15 +11,6 @@ namespace net {
  */
 class Wifi {
   public:
-    // Identifies the source of an event.
-    using EventBase = const char*;
-    // Pointer to event data.
-    using EventData = void*;
-    // Event identification number.
-    using EventId = int32_t;
-    // Pointer to a function handling Wi-Fi events.
-    using EventHandlerFunction = void (*)(common::Argument, EventBase, EventId,
-                                          EventData);
     /**
      * @brief Wi-Fi operating modes.
      */
@@ -123,18 +114,20 @@ class Wifi {
      *   - common::Error::OK: Success.
      *   - common::Error::FAIL: Fail.
      */
-    common::Error setWifiEventHandler(EventHandlerFunction eventHandler);
+    common::Error
+    setWifiEventHandler(common::event::HandlerFunction eventHandler);
 
     /**
      * @brief Sets the event handler for IP events.
      *
-     * @param config eventHandler Function pointer to the event handler.
+     * @param eventHandler Function pointer to the event handler.
      *
      * @return
      *   - common::Error::OK: Success.
      *   - common::Error::FAIL: Fail.
      */
-    common::Error setIpEventHandler(EventHandlerFunction eventHandler);
+    common::Error
+    setIpEventHandler(common::event::HandlerFunction eventHandler);
 
     /**
      * @brief Starts the Wi-Fi module.
@@ -189,7 +182,22 @@ class Wifi {
      *
      * @param eventData Event data containing the IP address information.
      */
-    void showIp(EventData eventData);
+    void showIp(common::event::Data eventData);
+
+    /**
+     * @brief Displays information about the connected station.
+     *
+     * @param eventData Event data containing the station connected information.
+     */
+    void showConnectedStaInfo(common::event::Data eventData);
+
+    /**
+     * @brief Displays information about the disconnected station.
+     *
+     * @param eventData Event data containing the station disconnected
+     * information.
+     */
+    void showDisconnectedStaInfo(common::event::Data eventData);
 
   private:
     Wifi() = default;
@@ -220,6 +228,7 @@ class Wifi {
 
     static constexpr size_t SCAN_LIST_SIZE{10};
     static constexpr int NO_STA_IS_CONNECTED{0};
+    static constexpr int32_t EVENT_ANY_ID{-1};
     Mode mode_{Mode::NONE};
 };
 

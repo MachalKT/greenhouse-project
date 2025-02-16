@@ -3,13 +3,14 @@
 #include "esp_mac.h"
 #include "esp_netif_types.h"
 #include "esp_wifi_types.h"
+#include "types.hpp"
 #include "wifi.hpp"
 
 static constexpr uint8_t MAX_RECONNECT_ATTEMPTS{5};
 
-static void myEventHandler(common::Argument arg, net::Wifi::EventBase eventbase,
-                           net::Wifi::EventId eventId,
-                           net::Wifi::EventData eventData) {
+static void myEventHandler(common::Argument arg, common::event::Base eventbase,
+                           common::event::Id eventId,
+                           common::event::Data eventData) {
   assert(arg);
   net::Wifi* wifiSta = static_cast<net::Wifi*>(arg);
   ESP_LOGW("WIFI", "eventBase %d", static_cast<int>(eventId));
@@ -37,16 +38,10 @@ static void myEventHandler(common::Argument arg, net::Wifi::EventBase eventbase,
     wifiSta->showIp(eventData);
     break;
   case WIFI_EVENT_AP_STACONNECTED: {
-    wifi_event_ap_staconnected_t* event =
-        static_cast<wifi_event_ap_staconnected_t*>(eventData);
-    ESP_LOGI("WIFI", "station " MACSTR " join, AID=%d", MAC2STR(event->mac),
-             event->aid);
+    wifiSta->showConnectedStaInfo(eventData);
   } break;
   case WIFI_EVENT_AP_STADISCONNECTED: {
-    wifi_event_ap_stadisconnected_t* event =
-        static_cast<wifi_event_ap_stadisconnected_t*>(eventData);
-    ESP_LOGI("WIFI", "station " MACSTR " leave, AID=%d, reason=%d",
-             MAC2STR(event->mac), event->aid, event->reason);
+    wifiSta->showDisconnectedStaInfo(eventData);
   } break;
   }
 }

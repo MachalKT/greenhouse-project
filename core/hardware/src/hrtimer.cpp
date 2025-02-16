@@ -45,7 +45,7 @@ common::Error HrTimer::deinit() {
   return common::Error::OK;
 }
 
-void HrTimer::setCallback(common::Callback cb, common::CallbackData data) {
+void HrTimer::setCallback(common::Callback cb, common::Argument data) {
   cb_ = cb;
   data_ = data;
 }

@@ -26,7 +26,7 @@ class IGpio {
 
     virtual common::Error setInterrupt(const gpio::InterruptType interruptType,
                                        common::Callback interruptCallback,
-                                       common::CallbackData callbackData) = 0;
+                                       common::Argument callbackData) = 0;
 
     virtual bool isGpioAssigned() const = 0;
 };

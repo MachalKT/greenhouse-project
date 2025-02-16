@@ -8,6 +8,7 @@
 #include "sht40.hpp"
 #include "spi.hpp"
 #include "timedmeter.hpp"
+#include "types.hpp"
 #include "utils.hpp"
 
 namespace {

@@ -116,7 +116,7 @@ class Gpio final : public IGpio {
      */
     common::Error setInterrupt(const gpio::InterruptType interruptType,
                                common::Callback interruptCallback,
-                               common::CallbackData callbackData) override;
+                               common::Argument callbackData) override;
 
     /**
      * @brief Is gpio assigned.

@@ -1,4 +1,4 @@
-set(SRC src/delay.cpp src/threadbase.cpp)
+set(SRC src/delay.cpp src/threadbase.cpp src/timer.cpp)
 
 idf_component_register(
     SRCS ${SRC}

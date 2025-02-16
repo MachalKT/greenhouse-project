@@ -1,7 +1,7 @@
 #include "delay.hpp"
 #include "esp_log.h"
-#include "hrtimer.hpp"
 #include "nvsstore.hpp"
+#include "timer.hpp"
 #include "wificontroller.hpp"
 #include <string_view>
 
@@ -20,7 +20,7 @@ void app_main(void) {
 
   storage::hw::NvsStore storage{"storage"};
 
-  timer::hw::HrTimer wifiReconnectTimer;
+  timer::sw::Timer wifiReconnectTimer;
   errorCode = wifiReconnectTimer.init();
   if (errorCode != common::Error::OK) {
     ESP_LOGE(TAG.data(), "wifiReconnectTimer init fail");

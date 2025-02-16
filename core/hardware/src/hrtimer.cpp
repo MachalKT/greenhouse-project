@@ -45,17 +45,17 @@ common::Error HrTimer::deinit() {
   return common::Error::OK;
 }
 
-void HrTimer::setCallback(common::Callback cb, common::Argument data) {
+void HrTimer::setCallback(common::Callback cb, common::Argument arg) {
   cb_ = cb;
-  data_ = data;
+  arg_ = arg;
 }
 
 common::Error HrTimer::startOnce(const common::Time timeUs) {
-  esp_err_t espErrorCode =
-      esp_timer_start_once(static_cast<esp_timer_handle_t>(handle_), timeUs);
+  esp_err_t espErrorCode = esp_timer_start_once(
+      static_cast<esp_timer_handle_t>(handle_), static_cast<uint64_t>(timeUs));
   if (espErrorCode == ESP_ERR_INVALID_STATE) {
-    espErrorCode =
-        esp_timer_restart(static_cast<esp_timer_handle_t>(handle_), timeUs);
+    espErrorCode = esp_timer_restart(static_cast<esp_timer_handle_t>(handle_),
+                                     static_cast<uint64_t>(timeUs));
   }
 
   if (espErrorCode != ESP_OK) {
@@ -67,10 +67,10 @@ common::Error HrTimer::startOnce(const common::Time timeUs) {
 
 common::Error HrTimer::startPeriodic(const common::Time timeUs) {
   esp_err_t espErrorCode = esp_timer_start_periodic(
-      static_cast<esp_timer_handle_t>(handle_), timeUs);
+      static_cast<esp_timer_handle_t>(handle_), static_cast<uint64_t>(timeUs));
   if (espErrorCode == ESP_ERR_INVALID_STATE) {
-    espErrorCode =
-        esp_timer_restart(static_cast<esp_timer_handle_t>(handle_), timeUs);
+    espErrorCode = esp_timer_restart(static_cast<esp_timer_handle_t>(handle_),
+                                     static_cast<uint64_t>(timeUs));
   }
 
   if (espErrorCode != ESP_OK) {
@@ -92,7 +92,7 @@ void HrTimer::timerCallback_(void* arg) {
 
   HrTimer* timer = static_cast<HrTimer*>(arg);
   if (timer->cb_) {
-    timer->cb_(timer->data_);
+    timer->cb_(timer->arg_);
   }
 }
 
@@ -108,7 +108,8 @@ common::Error HrTimer::setTimerProperties_() {
   }
 
   setTimerNumber_();
-  name_ = std::string{"Timer"} + std::to_string(static_cast<int>(timerNumber_));
+  name_ =
+      std::string{"HrTimer"} + std::to_string(static_cast<int>(timerNumber_));
 
   return common::Error::OK;
 }

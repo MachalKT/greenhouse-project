@@ -69,7 +69,7 @@ class Wifi {
     /**
      * @brief Retrieves the singleton instance of the Wifi class.
      */
-    static Wifi& getIstance();
+    static Wifi& getInstance();
 
     /**
      * @brief Initializes the Wi-Fi module.
@@ -109,25 +109,28 @@ class Wifi {
      * @brief Sets the event handler for Wi-Fi events.
      *
      * @param eventHandler Function pointer to the event handler.
+     * @param arg Argument.
      *
      * @return
      *   - common::Error::OK: Success.
      *   - common::Error::FAIL: Fail.
      */
     common::Error
-    setWifiEventHandler(common::event::HandlerFunction eventHandler);
+    setWifiEventHandler(common::event::HandlerFunction eventHandler,
+                        common::Argument arg);
 
     /**
      * @brief Sets the event handler for IP events.
      *
      * @param eventHandler Function pointer to the event handler.
+     * @param arg Argument.
      *
      * @return
      *   - common::Error::OK: Success.
      *   - common::Error::FAIL: Fail.
      */
-    common::Error
-    setIpEventHandler(common::event::HandlerFunction eventHandler);
+    common::Error setIpEventHandler(common::event::HandlerFunction eventHandler,
+                                    common::Argument arg);
 
     /**
      * @brief Starts the Wi-Fi module.
@@ -168,36 +171,32 @@ class Wifi {
     common::Error disconnect();
 
     /**
-     * @brief Displays the list of available access points.
-     */
-    void showAvailableApList();
-
-    /**
-     * @brief Displays the list of connected stations.
-     */
-    void showConnectedStaList();
-
-    /**
-     * @brief Displays the assigned IP address.
+     * @brief Scan all available APs.
      *
-     * @param eventData Event data containing the IP address information.
+     * @return
+     *   - common::Error::OK: Success.
+     *   - common::Error::FAIL: Fail.
+     *   - common::Error::INVALID_STATE: Wi-Fi not set to Sta mode.
      */
-    void showIp(common::event::Data eventData);
+    common::Error scan();
 
     /**
-     * @brief Displays information about the connected station.
+     * @brief Check if Wi-Fi is in STA mode.
      *
-     * @param eventData Event data containing the station connected information.
+     * @return
+     *   - true: Wi-Fi is in STA or APSTA mode.
+     *   - false: Wi-Fi is in AP mode.
      */
-    void showConnectedStaInfo(common::event::Data eventData);
+    bool isStaMode() const;
 
     /**
-     * @brief Displays information about the disconnected station.
+     * @brief Check if Wi-Fi is in AP mode.
      *
-     * @param eventData Event data containing the station disconnected
-     * information.
+     * @return
+     *   - true: Wi-Fi is in AP or APSTA mode.
+     *   - false: Wi-Fi is in STA mode.
      */
-    void showDisconnectedStaInfo(common::event::Data eventData);
+    bool isApMode() const;
 
   private:
     Wifi() = default;
@@ -220,14 +219,6 @@ class Wifi {
 
     common::Error setApConfig_(const ApConfig config);
 
-    bool isStaMode_() const;
-
-    bool isApMode_() const;
-
-    std::string_view toString_(AuthenticateMode authenticateMode);
-
-    static constexpr size_t SCAN_LIST_SIZE{10};
-    static constexpr int NO_STA_IS_CONNECTED{0};
     static constexpr int32_t EVENT_ANY_ID{-1};
     Mode mode_{Mode::NONE};
 };

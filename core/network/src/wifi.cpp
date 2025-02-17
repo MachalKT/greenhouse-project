@@ -124,11 +124,6 @@ bool Wifi::isApMode() const {
 }
 
 common::Error Wifi::preInit_() {
-  common::Error errorCode = nvsInit_();
-  if (errorCode != common::Error::OK) {
-    return common::Error::FAIL;
-  }
-
   esp_err_t espErrorCode = esp_netif_init();
   if (espErrorCode != ESP_OK) {
     return common::Error::FAIL;
@@ -141,25 +136,6 @@ common::Error Wifi::preInit_() {
 
   wifi_init_config_t wifiConfig = WIFI_INIT_CONFIG_DEFAULT();
   espErrorCode = esp_wifi_init(&wifiConfig);
-  if (espErrorCode != ESP_OK) {
-    return common::Error::FAIL;
-  }
-
-  return common::Error::OK;
-}
-
-common::Error Wifi::nvsInit_() {
-  esp_err_t espErrorCode = nvs_flash_init();
-  if (espErrorCode == ESP_OK) {
-    return common::Error::OK;
-  }
-
-  espErrorCode = nvs_flash_erase();
-  if (espErrorCode != ESP_OK) {
-    return common::Error::FAIL;
-  }
-
-  espErrorCode = nvs_flash_init();
   if (espErrorCode != ESP_OK) {
     return common::Error::FAIL;
   }

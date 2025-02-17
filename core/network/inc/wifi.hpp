@@ -73,6 +73,7 @@ class Wifi {
 
     /**
      * @brief Initializes the Wi-Fi module.
+     * @note NVS must be initialized before calling init Wi-Fi
      *
      * @param config Wi-Fi configuration settings.
      *
@@ -208,8 +209,6 @@ class Wifi {
     Wifi& operator=(Wifi&&) = delete;
 
     common::Error preInit_();
-
-    common::Error nvsInit_();
 
     common::Error setMode_(const Mode mode);
 

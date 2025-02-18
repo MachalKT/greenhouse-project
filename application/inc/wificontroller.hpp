@@ -25,7 +25,8 @@ class WifiController {
 
     /**
      * @brief Initializes the Wi-Fi controller with the provided
-     *configuration.
+     * configuration.
+     * @note NVS must be initialized before calling init WifiController
      *
      * @return
      *   - common::Error::OK: Success.

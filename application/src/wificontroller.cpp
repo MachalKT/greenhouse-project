@@ -1,4 +1,5 @@
 #include "wificontroller.hpp"
+#include "defs.hpp"
 #include "esp_log.h"
 #include "esp_mac.h"
 #include "esp_netif.h"
@@ -6,7 +7,6 @@
 #include "esp_wifi_types.h"
 #include "wifi.hpp"
 #include <cstring>
-#include <string_view>
 
 namespace {
 static std::string_view TAG{"WIFI_CONTROLLER"};
@@ -17,9 +17,8 @@ static constexpr std::string_view SEPARATOR_STA_LIST{"-----------------"};
 
 namespace app {
 
-WifiController::WifiController(timer::ITimer& reconnectTimer)
-    : reconnectTimer_{reconnectTimer} {
-  reconnectTimer.setCallback(
+WifiController::WifiController(Config config) : config_{config} {
+  config_.reconnectTimer.setCallback(
       [](void* arg) {
         assert(arg);
         WifiController* wifiController = static_cast<WifiController*>(arg);
@@ -30,9 +29,26 @@ WifiController::WifiController(timer::ITimer& reconnectTimer)
 }
 
 common::Error WifiController::init() {
+  std::string ssid{""};
+  std::string password{""};
+
+  common::Error errorCode =
+      readWifiCredential_(ssid, common::key::SSID, common::key::SSID_SIZE);
+  if (errorCode != common::Error::OK) {
+    ESP_LOGE(TAG.data(), "Cannot read ssid from nvs");
+    return common::Error::FAIL;
+  }
+
+  errorCode = readWifiCredential_(password, common::key::PASSWORD,
+                                  common::key::PASSWORD_SIZE);
+  if (errorCode != common::Error::OK) {
+    ESP_LOGE(TAG.data(), "Cannot read password from nvs");
+    return common::Error::FAIL;
+  }
+
   net::Wifi::Config wifiConfig{};
-  wifiConfig.sta.ssid = "";
-  wifiConfig.sta.password = "";
+  wifiConfig.sta.ssid = ssid;
+  wifiConfig.sta.password = password;
   wifiConfig.sta.authenticateMode = net::Wifi::AuthenticateMode::WPA2_PSK;
   wifiConfig.ap.ssid = "esp";
   wifiConfig.ap.password = "123456789";
@@ -41,7 +57,7 @@ common::Error WifiController::init() {
   wifiConfig.ap.channel = 1;
   wifiConfig.mode = net::Wifi::Mode::APSTA;
 
-  common::Error errorCode = getWifiInstance_().init(wifiConfig);
+  errorCode = getWifiInstance_().init(wifiConfig);
   if (errorCode != common::Error::OK) {
     return common::Error::FAIL;
   }
@@ -79,7 +95,7 @@ void WifiController::wifiEventHandler_(common::Argument arg,
     break;
   case WIFI_EVENT_STA_CONNECTED:
     wifiController->reconnectAttempt_ = 0;
-    wifiController->reconnectTimer_.stop();
+    wifiController->config_.reconnectTimer.stop();
     break;
   case WIFI_EVENT_STA_DISCONNECTED:
     wifiController->getWifiInstance_().scan();
@@ -113,7 +129,7 @@ net::Wifi& WifiController::getWifiInstance_() {
 common::Error WifiController::reconnect_() {
   if (reconnectAttempt_ > MAX_RECONNECT_ATTEMPTS) {
     reconnectAttempt_ = 0;
-    return reconnectTimer_.startOnce(RECONNECT_TIME_US);
+    return config_.reconnectTimer.startOnce(RECONNECT_TIME_US);
   }
 
   ++reconnectAttempt_;
@@ -238,6 +254,25 @@ WifiController::toString_(net::Wifi::AuthenticateMode authenticateMode) {
   }
 
   return "UNKNOWN";
+}
+common::Error
+WifiController::readWifiCredential_(std::string& value,
+                                    const std::string_view valueKey,
+                                    const std::string_view valueSizeKey) {
+  uint8_t valueSize{0};
+
+  common::Error errorCode = config_.storage.getItem(valueSizeKey, valueSize);
+  if (errorCode != common::Error::OK) {
+    return common::Error::FAIL;
+  }
+
+  errorCode = config_.storage.getString(valueKey, value,
+                                        static_cast<size_t>(valueSize));
+  if (errorCode != common::Error::OK) {
+    return common::Error::FAIL;
+  }
+
+  return common::Error::OK;
 }
 
 } // namespace app

@@ -6,6 +6,7 @@
 
 namespace storage {
 class IStorage {
+  public:
     virtual common::Error setItem(const std::string_view& key,
                                   const uint8_t& item) = 0;
 

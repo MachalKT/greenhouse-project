@@ -1,7 +1,7 @@
 #pragma once
 
 #include "types.hpp"
-#include <string_view>
+#include <string>
 
 namespace net {
 
@@ -41,8 +41,8 @@ class Wifi {
      * @brief Wi-fi Ap mode Configuration.
      */
     struct ApConfig {
-        std::string_view ssid;
-        std::string_view password;
+        std::string ssid;
+        std::string password;
         AuthenticateMode authenticateMode;
         uint8_t maxStaConnected;
         uint8_t channel;
@@ -52,8 +52,8 @@ class Wifi {
      * @brief Wi-fi Sta mode Configuration.
      */
     struct StaConfig {
-        std::string_view ssid;
-        std::string_view password;
+        std::string ssid;
+        std::string password;
         AuthenticateMode authenticateMode;
     };
 

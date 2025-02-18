@@ -11,7 +11,7 @@ namespace hw {
  * @class NvsStore
  * @brief Implementation Non-Volatile Storage (NVS)
  */
-class NvsStore : IStorage {
+class NvsStore final : public IStorage {
   public:
     /**
      * @brief Constructor for NvsStore.

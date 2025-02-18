@@ -18,13 +18,15 @@ void app_main(void) {
     ESP_LOGE(TAG.data(), "NVS init fail");
   }
 
+  storage::hw::NvsStore storage{"storage"};
+
   timer::hw::HrTimer wifiReconnectTimer;
   errorCode = wifiReconnectTimer.init();
   if (errorCode != common::Error::OK) {
     ESP_LOGE(TAG.data(), "wifiReconnectTimer init fail");
   }
 
-  app::WifiController wifiController{wifiReconnectTimer};
+  app::WifiController wifiController{{wifiReconnectTimer, storage}};
   errorCode = wifiController.init();
   if (errorCode != common::Error::OK) {
     ESP_LOGE(TAG.data(), "wifiController init fail");

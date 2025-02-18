@@ -1,9 +1,11 @@
 #pragma once
 
-#include "interfaces/itimer.hpp"
+#include "istorage.hpp"
+#include "itimer.hpp"
 #include "types.hpp"
 #include "utils.hpp"
 #include "wifi.hpp"
+#include <string>
 #include <string_view>
 
 namespace app {
@@ -15,13 +17,17 @@ namespace app {
  */
 class WifiController {
   public:
+    struct Config {
+        timer::ITimer& reconnectTimer;
+        storage::IStorage& storage;
+    };
     /**
      * @brief Constructs a WifiController instance.
      *
      * @param reconnectTimer Timer used for handling reconnection
      * attempts.
      */
-    WifiController(timer::ITimer& reconnectTimer);
+    WifiController(Config config);
 
     /**
      * @brief Initializes the Wi-Fi controller with the provided
@@ -135,6 +141,10 @@ class WifiController {
      */
     std::string_view toString_(net::Wifi::AuthenticateMode authenticateMode);
 
+    common::Error readWifiCredential_(std::string& value,
+                                      const std::string_view valueKey,
+                                      const std::string_view valueSizeKey);
+
     static constexpr common::Time RECONNECT_TIME_US{
         common::utils::msToUs<common::Time, common::Time>(
             common::utils::sToMs<common::Time, uint8_t>(60))};
@@ -142,7 +152,7 @@ class WifiController {
     static constexpr int NO_STA_IS_CONNECTED{0};
     static constexpr uint16_t NO_GET_AVAILABLE_AP{0};
     static constexpr uint8_t MAX_RECONNECT_ATTEMPTS{5};
-    timer::ITimer& reconnectTimer_;
+    Config config_;
     uint8_t reconnectAttempt_{0};
 };
 

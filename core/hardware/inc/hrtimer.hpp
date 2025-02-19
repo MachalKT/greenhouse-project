@@ -3,7 +3,7 @@
 #include <queue>
 #include <string>
 
-#include "interfaces/itimer.hpp"
+#include "itimer.hpp"
 #include "types.hpp"
 
 namespace timer {
@@ -41,8 +41,7 @@ class HrTimer final : public ITimer {
      * @param timerCallback Timer callback.
      * @param data Callback data.
      */
-    void setCallback(common::Callback timerCallback,
-                     common::Argument data) override;
+    void setCallback(common::Callback cb, common::Argument arg) override;
 
     /**
      * @brief Start timer once.
@@ -77,8 +76,6 @@ class HrTimer final : public ITimer {
     common::Error stop() override;
 
   private:
-    using TimerHandle = void*;
-
     /**
      * @brief Timer number.
      */
@@ -127,12 +124,12 @@ class HrTimer final : public ITimer {
     void setTimerNumber_();
 
     static constexpr uint8_t MAX_TIMER_COUNT{4};
-    static constexpr std::string_view INVALID_NAME{"Timer not exist"};
+    static constexpr std::string_view INVALID_NAME{"HrTimer not exist"};
     static uint8_t timerCount_;
     static std::queue<HrTimer::TimerNumber> availableTimerNumber_;
     TimerHandle handle_{nullptr};
     common::Callback cb_{nullptr};
-    common::Argument data_{nullptr};
+    common::Argument arg_{nullptr};
     TimerNumber timerNumber_{TimerNumber::TIMER_NOT_EXIST};
     std::string name_{INVALID_NAME.data()};
 };

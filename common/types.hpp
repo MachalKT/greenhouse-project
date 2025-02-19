@@ -3,7 +3,7 @@
 #include <cstdint>
 
 namespace common {
-using Time = uint64_t;
+using Time = uint32_t;
 using Callback = void (*)(void*);
 using Argument = void*;
 

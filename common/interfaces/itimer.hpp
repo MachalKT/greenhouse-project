@@ -6,10 +6,11 @@
 #include "types.hpp"
 
 namespace timer {
+using TimerHandle = void*;
+
 class ITimer {
   public:
-    virtual void setCallback(common::Callback timerCallback,
-                             common::Argument data) = 0;
+    virtual void setCallback(common::Callback cb, common::Argument arg) = 0;
 
     virtual common::Error startOnce(const common::Time timeUs) = 0;
 

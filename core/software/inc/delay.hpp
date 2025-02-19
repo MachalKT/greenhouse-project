@@ -1,5 +1,6 @@
 #pragma once
 
+#include "types.hpp"
 #include <cstdint>
 
 namespace sw {
@@ -9,6 +10,6 @@ namespace sw {
  *
  * @param timeMs Time in milliseconds.
  */
-void delayMs(const uint32_t timeMs);
+void delayMs(const common::Time timeMs);
 
 } // namespace sw

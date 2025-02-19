@@ -11,6 +11,10 @@ NvsStore::NvsStore(const std::string_view nvsNamepsace)
     : namespace_{nvsNamepsace} {}
 
 common::Error NvsStore::init() {
+  if (isNvsInitialized_) {
+    return common::Error::OK;
+  }
+
   esp_err_t espErrorCode = nvs_flash_init();
   if (espErrorCode == ESP_OK) {
     isNvsInitialized_ = true;

@@ -10,6 +10,8 @@
 #include "interfaces/igpio.hpp"
 #include "types.hpp"
 
+#include <vector>
+
 namespace hw {
 namespace adc {
 

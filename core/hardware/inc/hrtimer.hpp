@@ -42,7 +42,7 @@ class HrTimer final : public ITimer {
      * @param data Callback data.
      */
     void setCallback(common::Callback timerCallback,
-                     common::CallbackData data) override;
+                     common::Argument data) override;
 
     /**
      * @brief Start timer once.
@@ -132,7 +132,7 @@ class HrTimer final : public ITimer {
     static std::queue<HrTimer::TimerNumber> availableTimerNumber_;
     TimerHandle handle_{nullptr};
     common::Callback cb_{nullptr};
-    common::CallbackData data_{nullptr};
+    common::Argument data_{nullptr};
     TimerNumber timerNumber_{TimerNumber::TIMER_NOT_EXIST};
     std::string name_{INVALID_NAME.data()};
 };

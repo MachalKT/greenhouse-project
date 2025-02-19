@@ -3,6 +3,8 @@
 #include "interfaces/igpio.hpp"
 #include "types.hpp"
 
+#include <cstddef>
+
 namespace hw {
 namespace spi {
 using DeviceHandle = void*;

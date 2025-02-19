@@ -9,7 +9,7 @@ namespace timer {
 class ITimer {
   public:
     virtual void setCallback(common::Callback timerCallback,
-                             common::CallbackData data) = 0;
+                             common::Argument data) = 0;
 
     virtual common::Error startOnce(const common::Time timeUs) = 0;
 

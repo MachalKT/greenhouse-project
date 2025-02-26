@@ -4,9 +4,9 @@
 #include <array>
 
 namespace sx127x {
-//
-// ModemBase
-//
+/**
+ * ModemBase
+ */
 ModemBase::ModemBase(BaseConfig config) : config_{config} {}
 
 common::Error ModemBase::setMode(Mode mode) {
@@ -29,7 +29,7 @@ uint64_t ModemBase::getFrequencyHz() {
   common::Error errorCode =
       read_(reg::common::FRF_MSB, frfData.data(), frfData.size());
   if (errorCode != common::Error::OK) {
-    return 0;
+    return INVALID_FREQUENCY_HZ;
   }
 
   uint64_t frf = (static_cast<uint64_t>(frfData[0]) << 16) |
@@ -188,9 +188,9 @@ uint8_t ModemBase::paConfigValue_(PaPin pin, int8_t power) {
   return 0;
 }
 
-//
-// LoRa
-//
+/**
+ * LoRa
+ */
 LoRa::LoRa(Config config)
     : ModemBase{{config.spi, config.spiHandle, Modulation::LORA}} {}
 
@@ -485,6 +485,7 @@ int16_t LoRa::getRssi_() {
     return common::SignalQuality::RSSI_INVALID_VALUE;
   }
 
+  constexpr uint64_t RF_MID_BAND_THRESHOLD_HZ{525'000'000};
   if (frequencyHz < RF_MID_BAND_THRESHOLD_HZ) {
     // section 5.5.5. low frequency
     return static_cast<int16_t>(-164) + static_cast<int16_t>(rssiValue);

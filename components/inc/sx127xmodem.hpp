@@ -1,13 +1,12 @@
-// Copyright 2023
-//
-// Library for sx127xmodem modified and adapted to the project based on
-// the library for sx127x.
-// Creator of the sx127x library:
-// Andrey Rodionov <dernasherbrezon@gmail.com>
-// The spi sx127x library can be obtained at
-//
-//      https://github.com/dernasherbrezon/sx127x/tree/main
-//
+/**
+ * Copyright 2025
+ *
+ * These classes were created based on the sx127x project:
+ * https://github.com/michaelbecker/freertos-addons
+ *
+ * Adjustments and modifications have been made to fit the specific needs
+ * of this project.
+ */
 
 // Copyright 2022 Andrey Rodionov <dernasherbrezon@gmail.com>
 //
@@ -22,6 +21,17 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+
+// Copyright 2023
+//
+// Library for sx127xmodem modified and adapted to the project based on
+// the library for sx127x.
+// Creator of the sx127x library:
+// Andrey Rodionov <dernasherbrezon@gmail.com>
+// The spi sx127x library can be obtained at
+//
+//      https://github.com/dernasherbrezon/sx127x/tree/main
+//
 
 #pragma once
 
@@ -43,6 +53,9 @@ enum class Mode : uint8_t {
   CAD = 0b00000111        // Channel activity detection
 };
 
+/**
+ * @brief Used to change modulation
+ */
 enum Modulation : uint8_t {
   LORA = 0b10000000,
   FSK = 0b00000000, // default
@@ -80,6 +93,9 @@ enum class Bandwidth : uint8_t {
   BW_500000 = 0b10010000
 };
 
+/**
+ * @brief Header mode
+ */
 enum class HeaderMode : uint8_t {
   EXPLICIT = 0b00000000,
   IMPLICIT = 0b00000001
@@ -115,26 +131,81 @@ enum class PaPin : uint8_t {
   BOOST = 0b10000000 // PA_BOOST pin. Output power is limited to +20 dBm
 };
 
+/**
+ * @class ModemBase
+ * @brief Base class for sx127x modem
+ */
 class ModemBase {
   public:
+    /**
+     * @brief Modem configuration
+     */
     struct BaseConfig {
         hw::ISpi& spi;
         hw::SpiDeviceHandle& spiHandle;
         Modulation modulation;
     };
 
+    /**
+     * @brief Construct a new ModemBase object.
+     *
+     * @param config Modem configuration
+     */
     ModemBase(BaseConfig config);
 
+    /**
+     * @brief Set the Mode
+     *
+     * @param mode Mode to set
+     *
+     * @return
+     *   - common::Error::OK: Success.
+     *   - common::Error::FAIL: Fail.
+     */
     common::Error setMode(Mode mode);
 
+    /**
+     * @brief Set the Frequency
+     *
+     * @param frequencyHz Frequency in Hz
+     *
+     * @return
+     *   - common::Error::OK: Success.
+     *   - common::Error::FAIL: Fail.
+     */
     common::Error setFrequency(uint64_t frequencyHz);
 
+    /**
+     * @brief Get the Frequency
+     *
+     * @return
+     *   - Frequency in Hz if success
+     *   - INVALID_FREQUENCY_HZ if failed
+     */
     uint64_t getFrequencyHz();
 
     virtual common::Error resetFifo() = 0;
 
+    /**
+     * @brief Set the Lna Boost Hf
+     *
+     * @param enable Enable or disable
+     *
+     * @return
+     *   - common::Error::OK: Success.
+     *   - common::Error::FAIL: Fail.
+     */
     common::Error setLnaBoostHf(bool enable);
 
+    /**
+     * @brief Set the Lna Gain
+     *
+     * @param gain Gain to set
+     *
+     * @return
+     *   - common::Error::OK: Success.
+     *   - common::Error::FAIL: Fail.
+     */
     virtual common::Error setLnaGain(Gain gain);
 
     virtual common::Error setBandwidth(Bandwidth bandwidth) = 0;
@@ -147,20 +218,50 @@ class ModemBase {
 
     virtual common::Error setPreambleLength(uint16_t length) = 0;
 
+    /**
+     * @brief Set the Pa Config
+     *
+     * @param pin Pa pin
+     * @param power Power to set
+     *
+     * @return
+     *   - common::Error::OK: Success.
+     *   - common::Error::FAIL: Fail.
+     *   - common::Error::INVALID_ARG: Invalid argument.
+     */
     common::Error setPaConfig(PaPin pin, int8_t power);
 
     virtual common::Error getRxData(uint8_t* data, const size_t dataLength) = 0;
 
     virtual size_t getRxDataLength() = 0;
 
+    /**
+     * @brief Start listening for incoming packets
+     *
+     * @return
+     *   - common::Error::OK: Success.
+     *   - common::Error::FAIL: Fail.
+     */
     common::Error listening();
 
+    /**
+     * @brief Transmit data
+     *
+     * @param data Data to transmit
+     * @param dataLength Data length
+     *
+     * @return
+     *   - common::Error::OK: Success.
+     *   - common::Error::FAIL: Fail.
+     */
     virtual common::Error transmitData(const uint8_t* data,
                                        const size_t dataLength);
 
     virtual common::SignalQuality getSignalQuality() = 0;
 
     virtual common::radio::IrqEvent getInterrupValue() = 0;
+
+    static constexpr uint64_t INVALID_FREQUENCY_HZ{0};
 
   protected:
     common::Error write_(uint8_t registerAddress, const uint8_t* buffer,
@@ -179,38 +280,152 @@ class ModemBase {
     BaseConfig config_;
 };
 
+/**
+ * @class LoRa
+ * @brief Class for LoRa modem
+ */
 class LoRa final : public ModemBase {
   public:
+    /**
+     * @brief LoRa configuration
+     */
     struct Config {
         hw::ISpi& spi;
         hw::SpiDeviceHandle& spiHandle;
     };
 
+    /**
+     * @brief Construct a new LoRa object.
+     *
+     * @param config LoRa configuration
+     */
     LoRa(Config config);
 
+    /**
+     * @brief Reset FIFO
+     *
+     * @return
+     *   - common::Error::OK: Success.
+     *   - common::Error::FAIL: Fail.
+     */
     common::Error resetFifo() override;
 
+    /**
+     * @brief Set the Lna Gain
+     * @note If gain is AUTO, AGC is enabled
+     *
+     * @param gain Gain to set
+     *
+     * @return
+     *   - common::Error::OK: Success.
+     *   - common::Error::FAIL: Fail.
+     */
     common::Error setLnaGain(Gain gain) override;
 
+    /**
+     * @brief Set the Bandwidth
+     *
+     * @param bandwidth Bandwidth to set
+     *
+     * @return
+     *   - common::Error::OK: Success.
+     *   - common::Error::FAIL: Fail.
+     */
     common::Error setBandwidth(Bandwidth bandwidth) override;
 
+    /**
+     * @brief Set the Header
+     *
+     * @return
+     *   - common::Error::OK: Success.
+     *   - common::Error::FAIL: Fail.
+     */
     common::Error setHeader() override;
 
+    /**
+     * @brief Set the Modem Config 2
+     *
+     * @param spreadingFactor Spreading factor to set
+     *
+     * @return
+     *   - common::Error::OK: Success.
+     *   - common::Error::FAIL: Fail.
+     */
     common::Error setModemConfig2(SF spreadingFactor) override;
 
+    /**
+     * @brief Set the Sync Word
+     *
+     * @param value Sync word to set
+     *
+     * @return
+     *   - common::Error::OK: Success.
+     *   - common::Error::FAIL: Fail.
+     */
     common::Error setSyncWord(uint8_t value) override;
 
+    /**
+     * @brief Set the Preamble Length
+     *
+     * @param length Preamble length to set
+     *
+     * @return
+     *   - common::Error::OK: Success.
+     *   - common::Error::FAIL: Fail.
+     */
     common::Error setPreambleLength(uint16_t length) override;
 
+    /**
+     * @brief Get the Rx Data
+     *
+     * @param data Data to get
+     * @param dataLength Data length
+     *
+     * @return
+     *   - common::Error::OK: Success.
+     *   - common::Error::FAIL: Fail.
+     */
     common::Error getRxData(uint8_t* data, const size_t dataLength) override;
 
+    /**
+     * @brief Get the Rx Data Length
+     *
+     * @return
+     *   - Data length if success
+     *   - 0 if failed
+     */
     size_t getRxDataLength() override;
 
+    /**
+     * @brief Transmit data
+     *
+     * @param data Data to transmit
+     * @param dataLength Data length
+     *
+     * @return
+     *   - common::Error::OK: Success.
+     *   - common::Error::FAIL: Fail.
+     */
     common::Error transmitData(const uint8_t* data,
                                const size_t dataLength) override;
 
+    /**
+     * @brief Get the Signal Quality
+     *
+     * @return
+     *   - common::SignalQuality Signal quality if success
+     *   - variables in common::SignalQuality has INVALID_VALUE if failed
+     */
     common::SignalQuality getSignalQuality() override;
 
+    /**
+     * @brief Get the Interrup request event Value
+     *
+     * @return
+     *   - common::radio::IrqEvent::RX_DONE: Packet reception complete
+     *   - common::radio::IrqEvent::TX_DONE: FIFO Payload transmission complete
+     *   - common::radio::IrqEvent::UNKNOWN: Unknown event
+     */
     common::radio::IrqEvent getInterrupValue() override;
 
   private:
@@ -223,8 +438,6 @@ class LoRa final : public ModemBase {
     int16_t getRssi_();
 
     float getSnr_();
-
-    static constexpr uint64_t RF_MID_BAND_THRESHOLD_HZ{525'000'000};
 };
 
 } // namespace sx127x

@@ -365,7 +365,7 @@ common::SignalQuality LoRa::getSignalQuality() {
   return signalQuality;
 }
 
-common::radio::IrqEvent LoRa::getInterrupValue() {
+common::radio::IrqEvent LoRa::getIrqEvent() {
   uint8_t value{0};
   common::Error errorCode =
       read_(reg::lora::IRQ_FLAGS, &value, reg::size::DEFAULT);

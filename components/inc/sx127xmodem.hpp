@@ -22,17 +22,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// Copyright 2023
-//
-// Library for sx127xmodem modified and adapted to the project based on
-// the library for sx127x.
-// Creator of the sx127x library:
-// Andrey Rodionov <dernasherbrezon@gmail.com>
-// The spi sx127x library can be obtained at
-//
-//      https://github.com/dernasherbrezon/sx127x/tree/main
-//
-
 #pragma once
 
 #include "ispi.hpp"
@@ -259,7 +248,7 @@ class ModemBase {
 
     virtual common::SignalQuality getSignalQuality() = 0;
 
-    virtual common::radio::IrqEvent getInterrupValue() = 0;
+    virtual common::radio::IrqEvent getIrqEvent() = 0;
 
     static constexpr uint64_t INVALID_FREQUENCY_HZ{0};
 
@@ -426,7 +415,7 @@ class LoRa final : public ModemBase {
      *   - common::radio::IrqEvent::TX_DONE: FIFO Payload transmission complete
      *   - common::radio::IrqEvent::UNKNOWN: Unknown event
      */
-    common::radio::IrqEvent getInterrupValue() override;
+    common::radio::IrqEvent getIrqEvent() override;
 
   private:
     common::Error reloadLowDatarateOptimization_();

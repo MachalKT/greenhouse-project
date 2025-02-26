@@ -67,7 +67,7 @@ class Gpio final : public IGpio {
      * @brief Get gpio number.
      * @note If gpio is not assigned, return INVALID_GPIO_NUMBER (-1).
      *
-     * @return GpioNumber Pin number.
+     * @return GpioNumber Gpio number.
      */
     GpioNumber getNumber() const override;
 
@@ -81,7 +81,7 @@ class Gpio final : public IGpio {
      * @return
      *   - common::Error::OK: Success.
      *   - common::Error::FAIL: Fail.
-     *   - common::Error::INVALID_STATE: Pin is not assigned.
+     *   - common::Error::INVALID_STATE: Gpio is not assigned.
      */
     common::Error setInterrupt(const GpioInterruptType interruptType,
                                common::Callback interruptCallback,

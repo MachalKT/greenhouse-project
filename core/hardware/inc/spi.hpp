@@ -1,21 +1,13 @@
 #pragma once
 
-#include "interfaces/ispi.hpp"
-
-#include <cstdint>
-
+#include "ispi.hpp"
 #include "types.hpp"
+#include <cstdint>
 
 namespace hw {
 namespace spi {
-/**
- * @brief  Spi Host. Peripherals that are software-accessible in it.
- */
 enum class Host : uint8_t { SPI, HSPI, VSPI };
 
-/**
- * @brief  Spi Dma Channel.
- */
 enum class DmaChannel : uint8_t {
   DISABLED,
   CHANNEL_1,
@@ -28,9 +20,6 @@ enum class DmaChannel : uint8_t {
 
 class Spi final : public ISpi {
   public:
-    /**
-     * @brief Spi configuration.
-     */
     struct Config {
         IGpio& miso;
         IGpio& mosi;
@@ -45,61 +34,17 @@ class Spi final : public ISpi {
      */
     Spi(Spi::Config config);
 
-    /**
-     * @brief Initialize spi.
-     *
-     * @param dmaChannel Dma channel.
-     *
-     * @return
-     *   - common::Error::OK Success.
-     *   - common::Error::FAIL Fail.
-     */
     common::Error init(const spi::DmaChannel dmaChannel);
 
-    /**
-     * @brief Add device to spi.
-     *
-     * @param deviceHandle Device handle.
-     * @param csPin Chip select pin.
-     * @param clockSpeedHz Clock speed in Hz.
-     *
-     * @return
-     *   - common::Error::OK Success.
-     *   - common::Error::FAIL Fail.
-     *   - common::Error::INVALID_ARG Invalid argument.
-     */
-    common::Error addDevice(spi::DeviceHandle& deviceHandle, IGpio& csPin,
-                            const int clockSpeedHz) override;
+    SpiDeviceHandle addDevice(IGpio& csPin, const int clockSpeedHz);
 
-    /**
-     * @brief Write data to spi device.
-     *
-     * @param deviceHandle Device handle.
-     * @param registerAddress Register address.
-     * @param buffer Buffer.
-     * @param bufferLength Buffer length.
-     *
-     * @return
-     *   - common::Error::OK Success.
-     *   - common::Error::FAIL Fail.
-     */
-    common::Error write(spi::DeviceHandle& deviceHandle, int registerAddress,
-                        const uint8_t* buffer, size_t bufferLength) override;
+    common::Error write(SpiDeviceHandle& deviceHandle,
+                        const uint8_t registerAddress, const uint8_t* buffer,
+                        const size_t bufferLength) override;
 
-    /**
-     * @brief Read data from spi device.
-     *
-     * @param deviceHandle Device handle.
-     * @param registerAddress Register address.
-     * @param buffer Buffer.
-     * @param bufferLength Buffer length.
-     *
-     * @return
-     *   - common::Error::OK Success.
-     *   - common::Error::FAIL Fail.
-     */
-    common::Error read(spi::DeviceHandle& deviceHandle, int registerAddress,
-                       uint8_t* buffer, size_t bufferLength) override;
+    common::Error read(SpiDeviceHandle& deviceHandle,
+                       const uint8_t registerAddress, uint8_t* buffer,
+                       const size_t bufferLength) override;
 
     static constexpr double CLOCK_SPEED_HZ{3E6};
 

@@ -13,7 +13,7 @@ class Gpio final : public IGpio {
      *
      * @param number Gpio number.
      */
-    explicit Gpio(const GpioNumber pinNumber);
+    explicit Gpio(const GpioNumber number);
 
     /**
      * @brief Gpio set mode.Gpio can be set to input or output mode.
@@ -23,7 +23,7 @@ class Gpio final : public IGpio {
      * @return
      *  - common::Error::OK: Success.
      *  - common::Error::FAIL: Fail.
-     *  - common::Error::INVALID_STATE: Pin is not assigned.
+     *  - common::Error::INVALID_STATE: Gpio is not assigned.
      */
     common::Error setMode(const GpioMode mode) override;
 
@@ -35,7 +35,7 @@ class Gpio final : public IGpio {
      * @return
      *   - common::Error::OK: Success.
      *   - common::Error::FAIL: Fail.
-     *   - common::Error::INVALID_STATE: Pin is not set in output mode.
+     *   - common::Error::INVALID_STATE: Gpio is not set in output mode.
      */
     common::Error setLevel(const GpioLevel level) override;
 
@@ -48,14 +48,14 @@ class Gpio final : public IGpio {
      * @return
      *   - common::Error::OK: Success.
      *   - common::Error::FAIL: Fail.
-     *   - common::Error::INVALID_STATE: Pin is not assigned.
+     *   - common::Error::INVALID_STATE: Gpio is not assigned.
      */
     common::Error configurePullUpDown(const bool pullUpEnable,
                                       const bool pullDownEnable) override;
 
     /**
      * @brief Get gpio level.
-     * @note if pin is not assigned, return GpioLevel::LOW.
+     * @note if gpio is not assigned, return GpioLevel::LOW.
      *
      * @return
      *   - GpioLevel::LOW: Low level.
@@ -65,7 +65,7 @@ class Gpio final : public IGpio {
 
     /**
      * @brief Get gpio number.
-     * @note If pin is not assigned, return INVALID_NUMBER (-1).
+     * @note If gpio is not assigned, return INVALID_GPIO_NUMBER (-1).
      *
      * @return GpioNumber Pin number.
      */

@@ -4,11 +4,11 @@
 
 namespace hw {
 
-std::vector<gpio::Number> Gpio::usedGpioNumbers_{};
+std::vector<GpioNumber> Gpio::usedGpioNumbers_{};
 
-Gpio::Gpio(gpio::Number number) {
-  if (number < FIRST_NUMBER or number > LAST_NUMBER) {
-    number_ = gpio::INVALID_NUMBER;
+Gpio::Gpio(GpioNumber number) {
+  if (number < FIRST_GPIO_NUMBER or number > LAST_GPIO_NUMBER) {
+    number_ = INVALID_GPIO_NUMBER;
     return;
   }
 
@@ -20,7 +20,7 @@ Gpio::Gpio(gpio::Number number) {
 
   for (auto& usedNumber : usedGpioNumbers_) {
     if (usedNumber == number) {
-      number_ = gpio::INVALID_NUMBER;
+      number_ = INVALID_GPIO_NUMBER;
       return;
     }
   }
@@ -29,8 +29,8 @@ Gpio::Gpio(gpio::Number number) {
   usedGpioNumbers_.push_back(number_);
 }
 
-common::Error Gpio::setMode(const gpio::Mode mode) {
-  if (number_ == gpio::INVALID_NUMBER) {
+common::Error Gpio::setMode(const GpioMode mode) {
+  if (number_ == INVALID_GPIO_NUMBER) {
     return common::Error::INVALID_STATE;
   }
 
@@ -40,11 +40,12 @@ common::Error Gpio::setMode(const gpio::Mode mode) {
     return common::Error::FAIL;
   }
 
+  mode_ = mode;
   return common::Error::OK;
 }
 
-common::Error Gpio::setLevel(const gpio::Level level) {
-  if (mode_ != gpio::Mode::OUTPUT) {
+common::Error Gpio::setLevel(const GpioLevel level) {
+  if (mode_ != GpioMode::OUTPUT) {
     return common::Error::INVALID_STATE;
   }
 
@@ -59,7 +60,7 @@ common::Error Gpio::setLevel(const gpio::Level level) {
 
 common::Error Gpio::configurePullUpDown(const bool pullUpEnable,
                                         const bool pullDownEnable) {
-  if (number_ == gpio::INVALID_NUMBER) {
+  if (number_ == INVALID_GPIO_NUMBER) {
     return common::Error::INVALID_STATE;
   }
 
@@ -81,21 +82,21 @@ common::Error Gpio::configurePullUpDown(const bool pullUpEnable,
   return common::Error::OK;
 }
 
-gpio::Level Gpio::getLevel() const {
-  if (number_ == gpio::INVALID_NUMBER) {
-    return gpio::Level::LOW;
+GpioLevel Gpio::getLevel() const {
+  if (number_ == INVALID_GPIO_NUMBER) {
+    return GpioLevel::LOW;
   }
 
-  return static_cast<gpio::Level>(
+  return static_cast<GpioLevel>(
       gpio_get_level(static_cast<gpio_num_t>(number_)));
 }
 
-gpio::Number Gpio::getNumber() const { return number_; }
+GpioNumber Gpio::getNumber() const { return number_; }
 
-common::Error Gpio::setInterrupt(const gpio::InterruptType interruptType,
+common::Error Gpio::setInterrupt(const GpioInterruptType interruptType,
                                  common::Callback interruptCallback,
                                  common::Argument callbackData) {
-  if (number_ == gpio::INVALID_NUMBER) {
+  if (number_ == INVALID_GPIO_NUMBER) {
     return common::Error::INVALID_STATE;
   }
 
@@ -124,7 +125,7 @@ common::Error Gpio::setInterrupt(const gpio::InterruptType interruptType,
   return common::Error::OK;
 }
 
-bool Gpio::isGpioAssigned() const { return number_ != gpio::INVALID_NUMBER; }
+bool Gpio::isGpioAssigned() const { return number_ != INVALID_GPIO_NUMBER; }
 
 common::Error Gpio::setIsrService_() {
   if (isInterruptEnabled_) {

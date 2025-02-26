@@ -93,7 +93,7 @@ void Adc::setConfig_(IGpio& adcGpio) {
   setUnitAndChannel_(adcGpio.getNumber());
 }
 
-void Adc::setUnitAndChannel_(const gpio::Number gpioNumber) {
+void Adc::setUnitAndChannel_(const GpioNumber gpioNumber) {
   switch (gpioNumber) {
   case 0:
     config_.unit = Unit::UNIT_2;

@@ -6,8 +6,8 @@
 
 #pragma once
 
-#include "interfaces/iadc.hpp"
-#include "interfaces/igpio.hpp"
+#include "iadc.hpp"
+#include "igpio.hpp"
 #include "types.hpp"
 
 #include <vector>
@@ -142,7 +142,7 @@ class Adc : public IAdc {
     };
 
     void setConfig_(IGpio& adcGpio);
-    void setUnitAndChannel_(const gpio::Number gpioNumber);
+    void setUnitAndChannel_(const GpioNumber gpioNumber);
     void setAdcHandles_(AdcHandle& adcHandle, AdcHandle& adcUnitHandle,
                         const UlpMode ulpMode);
 

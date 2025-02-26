@@ -3,28 +3,43 @@
 #include "types.hpp"
 
 namespace hw {
-namespace gpio {
-using Number = int8_t;
-enum class Mode : uint8_t;
-enum class Level : uint8_t;
-enum class InterruptType : uint8_t;
-static constexpr int8_t INVALID_NUMBER{-1};
-} // namespace gpio
+using GpioNumber = int8_t;
+static constexpr int8_t INVALID_GPIO_NUMBER{-1};
+
+enum class GpioMode : uint8_t {
+  DISABLE = 0,
+  INPUT,
+  OUTPUT,
+};
+
+enum class GpioLevel : uint8_t {
+  LOW = 0,
+  HIGH,
+};
+
+enum class GpioInterruptType : uint8_t {
+  DISABLE = 0,
+  RISING_EDGE,
+  FALLING_EDGE,
+  RISING_AND_FALLING_EDGE,
+  LOW_LEVEL,
+  HIGH_LEVEL,
+};
 
 class IGpio {
   public:
-    virtual common::Error setMode(const gpio::Mode mode) = 0;
+    virtual common::Error setMode(const GpioMode mode) = 0;
 
-    virtual common::Error setLevel(const gpio::Level level) = 0;
+    virtual common::Error setLevel(const GpioLevel level) = 0;
 
     virtual common::Error configurePullUpDown(const bool pullUpEnable,
                                               const bool pullDownEnable) = 0;
 
-    virtual gpio::Level getLevel() const = 0;
+    virtual GpioLevel getLevel() const = 0;
 
-    virtual gpio::Number getNumber() const = 0;
+    virtual GpioNumber getNumber() const = 0;
 
-    virtual common::Error setInterrupt(const gpio::InterruptType interruptType,
+    virtual common::Error setInterrupt(const GpioInterruptType interruptType,
                                        common::Callback interruptCallback,
                                        common::Argument callbackData) = 0;
 

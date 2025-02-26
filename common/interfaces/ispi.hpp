@@ -2,25 +2,22 @@
 
 #include "interfaces/igpio.hpp"
 #include "types.hpp"
+#include <cstddef>
 
 #include <cstddef>
 
 namespace hw {
-namespace spi {
-using DeviceHandle = void*;
-}
+using SpiDeviceHandle = void*;
 
 class ISpi {
   public:
-    virtual common::Error addDevice(spi::DeviceHandle& deviceHandle,
-                                    IGpio& csPin, const int clockSpeedHz) = 0;
+    virtual common::Error write(SpiDeviceHandle& deviceHandle,
+                                const uint8_t registerAddress,
+                                const uint8_t* buffer,
+                                const size_t bufferLength) = 0;
 
-    virtual common::Error write(spi::DeviceHandle& deviceHandle,
-                                int registerAddress, const uint8_t* buffer,
-                                size_t bufferLength) = 0;
-
-    virtual common::Error read(spi::DeviceHandle& deviceHandle,
-                               int registerAddress, uint8_t* buffer,
-                               size_t bufferLength) = 0;
+    virtual common::Error read(SpiDeviceHandle& deviceHandle,
+                               const uint8_t registerAddress, uint8_t* buffer,
+                               const size_t bufferLength) = 0;
 };
 } // namespace hw

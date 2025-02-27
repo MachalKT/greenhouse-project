@@ -67,13 +67,13 @@ storage::hw::NvsStore storage{"storage"};
 
 std::string ssid{"yourSSID"};
 uint8_t ssidSize{static_cast<uint8_t>(ssid.size())};
-storage.setItem(common::key::SSID_SIZE, ssidSize);
-storage.setString(common::key::SSID, ssid, static_cast<size_t>(ssidSize));
+storage.setItem(def::key::SSID_SIZE, ssidSize);
+storage.setString(def::key::SSID, ssid, static_cast<size_t>(ssidSize));
 
 std::string password{"yourPassword"};
 uint8_t passwordSize{static_cast<uint8_t>(password.size())};
-storage.setItem(common::key::PASSWORD_SIZE, passwordSize);
-storage.setString(common::key::PASSWORD, password, static_cast<size_t>(passwordSize));
+storage.setItem(def::key::PASSWORD_SIZE, passwordSize);
+storage.setString(def::key::PASSWORD, password, static_cast<size_t>(passwordSize));
 
 // ...
 ```

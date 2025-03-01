@@ -3,6 +3,7 @@
 #include "gpio.hpp"
 #include "hrtimer.hpp"
 #include "i2c.hpp"
+#include "radiothread.hpp"
 #include "rfm95.hpp"
 #include "sht40.hpp"
 #include "spi.hpp"
@@ -10,34 +11,32 @@
 #include "timer.hpp"
 #include "types.hpp"
 #include "utils.hpp"
+#include <string_view>
 
 namespace {
-const char* TAG = "MAIN";
+static constexpr std::string_view TAG{"Controller"};
 static constexpr common::Time MEASUREMENT_TIME_US{
     common::utils::msToUs<common::Time, common::Time>(
         common::utils::sToMs<common::Time, common::Time>(1))};
-static constexpr uint64_t RADIO_FREQUENCY_HZ{868'000'000};
-
 } // namespace
 
 extern "C" {
 void app_main(void) {
   common::Error errorCode{common::Error::OK};
 
-  hw::Gpio miso{19};
   hw::Gpio mosi{23};
+  hw::Gpio miso{19};
   hw::Gpio sck{18};
-  hw::Spi spi{{miso, mosi, sck, hw::spi::Host::VSPI}};
-
-  errorCode = spi.init(hw::spi::DmaChannel::CHANNEL_1);
+  hw::Spi spi{{miso, mosi, sck, hw::Spi::Host::VSPI}};
+  errorCode = spi.init(hw::Spi::DmaChannel::CHANNEL_1);
   if (errorCode != common::Error::OK) {
-    ESP_LOGE(TAG, "spi init fail");
+    ESP_LOGE(TAG.data(), "spi init fail");
   }
 
   hw::I2c i2c;
   errorCode = i2c.init();
   if (errorCode != common::Error::OK) {
-    ESP_LOGE(TAG, "i2c init fail");
+    ESP_LOGE(TAG.data(), "i2c init fail");
   }
 
   hw::Gpio batteryGpio{32};
@@ -45,20 +44,20 @@ void app_main(void) {
   errorCode =
       adc.init(hw::adc::BitWidth::BITWIDTH_12, hw::adc::Attenuation::DB_11);
   if (errorCode != common::Error::OK) {
-    ESP_LOGE(TAG, "adc init fail");
+    ESP_LOGE(TAG.data(), "adc init fail");
   }
 
   sensor::Sht40 sht40{i2c};
   errorCode = sht40.init();
   if (errorCode != common::Error::OK) {
-    ESP_LOGE(TAG, "sht40 init fail");
+    ESP_LOGE(TAG.data(), "sht40 init fail");
   }
 
   hw::Gpio rfm95ChipSelect{5};
   hw::SpiDeviceHandle spiRfm95Handle =
-      spi.addDevice(rfm95ChipSelect, static_cast<int>(hw::Spi::CLOCK_SPEED_HZ));
+      spi.addDevice(rfm95ChipSelect, radio::Rfm95::SPI_CLOCK_SPEED_HZ);
   if (spiRfm95Handle == nullptr) {
-    ESP_LOGE(TAG, "spi add device fail");
+    ESP_LOGE(TAG.data(), "spi add device fail");
   }
 
   hw::Gpio rst{4};
@@ -66,11 +65,11 @@ void app_main(void) {
   radio::Rfm95 rfm95{{rst, dio0, spi, spiRfm95Handle}};
   errorCode = rfm95.init(radio::Rfm95::Modulation::LORA);
   if (errorCode != common::Error::OK) {
-    ESP_LOGE(TAG, "radio init fail");
+    ESP_LOGE(TAG.data(), "radio init fail");
   }
 
   radio::Rfm95::ModemSettings settings;
-  settings.frequencyHz = RADIO_FREQUENCY_HZ;
+  settings.frequencyHz = 868'000'000;
   settings.lnaBoostHfEnable = true;
   settings.gain = radio::Rfm95::Gain::G1;
   settings.bandwidth = radio::Rfm95::Bandwidth::BW_125000;
@@ -82,17 +81,21 @@ void app_main(void) {
 
   errorCode = rfm95.setAllSettings(settings);
   if (errorCode != common::Error::OK) {
-    ESP_LOGE(TAG, "radio set all settings fail");
+    ESP_LOGE(TAG.data(), "radio set all settings fail");
   }
 
   timer::hw::HrTimer measurementTimer;
   measurementTimer.init();
   if (errorCode != common::Error::OK) {
-    ESP_LOGE(TAG, "Measurement timer init fail");
+    ESP_LOGE(TAG.data(), "Measurement timer init fail");
   }
 
-  app::TimedMeter timedMeter{{measurementTimer, sht40, sht40}};
+  common::Telemetry telemetry{};
+  app::TimedMeter timedMeter{{measurementTimer, sht40, sht40, telemetry}};
   timedMeter.start(MEASUREMENT_TIME_US);
+
+  app::RadioThread radioThread{{rfm95, std::nullopt, telemetry}};
+  radioThread.start();
 
   while (1) {
     timedMeter.yield();

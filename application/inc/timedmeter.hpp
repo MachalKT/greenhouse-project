@@ -12,6 +12,7 @@ class TimedMeter {
         timer::ITimer& measurementTimer;
         sensor::ITemperatureSensor& temperatureSensor;
         sensor::IHumiditySensor& humiditySensor;
+        common::Telemetry& telemetry;
     };
 
     /**
@@ -44,9 +45,9 @@ class TimedMeter {
      * @brief Get measurement Data.
      *
      * @return
-     *   - common::MeasurementData Measurement Data.
+     *   - common::Telemetry telemetry.
      */
-    common::MeasurementData getMeasurementData();
+    common::Telemetry getMeasurementData();
 
     /**
      * @brief Performs a measurement if a timer interrupt occurs.
@@ -57,7 +58,6 @@ class TimedMeter {
     void takeMeasurement_();
 
     Config config_;
-    common::MeasurementData measurementValues_;
     bool isReadyToMeasure_{true};
 };
 

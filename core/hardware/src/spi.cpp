@@ -6,7 +6,7 @@
 namespace hw {
 Spi::Spi(Config config) : config_{config} {}
 
-common::Error Spi::init(const spi::DmaChannel dmaChannel) {
+common::Error Spi::init(const DmaChannel dmaChannel) {
   if (config_.mosi.isGpioAssigned() == false or
       config_.miso.isGpioAssigned() == false or
       config_.sck.isGpioAssigned() == false) {
@@ -14,7 +14,7 @@ common::Error Spi::init(const spi::DmaChannel dmaChannel) {
   }
 
   int maxTransferSize{0};
-  if (dmaChannel == spi::DmaChannel::DISABLED) {
+  if (dmaChannel == DmaChannel::DISABLED) {
     maxTransferSize = SOC_SPI_MAXIMUM_BUFFER_SIZE;
   } else {
     maxTransferSize = DMA_ENABLE;

@@ -1,6 +1,10 @@
 #pragma once
 
+#include <limits>
+
 namespace sensor {
+static constexpr float INVALID_VALUE{std::numeric_limits<float>::max()};
+
 class ITemperatureSensor {
   public:
     virtual float getTemperatureC() = 0;

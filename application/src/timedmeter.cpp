@@ -1,9 +1,10 @@
 #include "timedmeter.hpp"
 
 #include "esp_log.h"
+#include <string_view>
 
 namespace {
-const char* TAG = "TimedMeter";
+static constexpr std::string_view TAG{"TimedMeter"};
 }
 
 namespace app {
@@ -21,14 +22,13 @@ TimedMeter::TimedMeter(Config config) : config_{config} {
 }
 
 common::Error TimedMeter::start(common::Time timeUs) {
+  takeMeasurement_();
   return config_.measurementTimer.startPeriodic(timeUs);
 }
 
 common::Error TimedMeter::stop() { return config_.measurementTimer.stop(); }
 
-common::MeasurementData TimedMeter::getMeasurementData() {
-  return measurementValues_;
-}
+common::Telemetry TimedMeter::getMeasurementData() { return config_.telemetry; }
 
 void TimedMeter::yield() {
   if (isReadyToMeasure_) {
@@ -38,11 +38,16 @@ void TimedMeter::yield() {
 }
 
 void TimedMeter::takeMeasurement_() {
-  measurementValues_.temperatureC = config_.temperatureSensor.getTemperatureC();
-  measurementValues_.humidityRh = config_.humiditySensor.getHumidityRh();
+  config_.telemetry.temperatureC = config_.temperatureSensor.getTemperatureC();
+  config_.telemetry.humidityRh = config_.humiditySensor.getHumidityRh();
 
-  ESP_LOGI(TAG, "temperature: %.2f [C], humidity: %.2f [RH]",
-           measurementValues_.temperatureC, measurementValues_.humidityRh);
+  if (config_.telemetry.temperatureC == sensor::INVALID_VALUE ||
+      config_.telemetry.humidityRh == sensor::INVALID_VALUE) {
+    ESP_LOGE(TAG.data(), "Measurement fail");
+  }
+
+  ESP_LOGI(TAG.data(), "temperature: %.2f [C], humidity: %.2f [RH]",
+           config_.telemetry.temperatureC, config_.telemetry.humidityRh);
 }
 
 } // namespace app

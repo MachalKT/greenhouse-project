@@ -9,4 +9,5 @@ static constexpr std::string_view PASSWORD_SIZE{"pass_size"};
 static constexpr std::string_view SSID{"ssid"};
 static constexpr std::string_view PASSWORD{"pass"};
 } // namespace key
+
 } // namespace def

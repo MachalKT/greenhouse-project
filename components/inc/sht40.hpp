@@ -99,7 +99,6 @@ class Sht40 final : public ITemperatureSensor, public IHumiditySensor {
     static constexpr uint8_t ADDRESS{0x44};
     static constexpr uint8_t RESET_COMMAND{0x94};
     static constexpr size_t BUFFER_SIZE{6};
-    static constexpr float INVALID_VALUE{std::numeric_limits<float>::max()};
 
     hw::II2c& i2c_;
     sht40::Precision precision_{sht40::Precision::HIGH};

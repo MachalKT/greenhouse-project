@@ -56,19 +56,17 @@
 #include "types.hpp"
 
 namespace sw {
-namespace thread {
-
 /**
- * @brief Core identifier
- */
-enum class CoreId : uint8_t { _0, _1 };
-}; // namespace thread
-
-/**
+ * @class ThreadBase
  * @brief Base class for a thread
  */
 class ThreadBase {
   public:
+    /**
+     * @brief Core identifier
+     */
+    enum class CoreId : uint8_t { _0, _1 };
+
     /**
      * @brief Thread configuration
      */
@@ -76,7 +74,7 @@ class ThreadBase {
         std::string_view name;
         uint32_t stackDepth;
         unsigned int priority;
-        thread::CoreId coreId;
+        CoreId coreId;
     };
 
     /**
@@ -146,17 +144,18 @@ class ThreadBase {
     /**
      * @brief Resumes the thread execution from an ISR
      */
-    void resumeFromISR_();
+    static void resumeFromISR_(ThreadHandle handle);
 
     /**
      * @brief Deletes the thread
      */
     void delete_();
 
+    ThreadHandle handle_{nullptr};
+
   private:
     static void taskFunction_(void* arg);
 
     Config config_;
-    ThreadHandle handle_{nullptr};
-};
+}; // namespace thread
 } // namespace sw

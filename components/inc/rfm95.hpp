@@ -257,6 +257,8 @@ class Rfm95 final : public IRadio {
      */
     common::Error setPaConfig(PaPin pin, int8_t power);
 
+    static constexpr int SPI_CLOCK_SPEED_HZ{3'000'000};
+
   private:
     common::Error setModem_(Modulation& modulation);
 

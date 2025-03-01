@@ -6,7 +6,7 @@
 namespace hw {
 Spi::Spi(Config config) : config_{config} {}
 
-common::Error Spi::init(const spi::DmaChannel dmaChannel) {
+common::Error Spi::init(const DmaChannel dmaChannel) {
   if (config_.mosi.isGpioAssigned() == false or
       config_.miso.isGpioAssigned() == false or
       config_.sck.isGpioAssigned() == false) {
@@ -14,7 +14,7 @@ common::Error Spi::init(const spi::DmaChannel dmaChannel) {
   }
 
   int maxTransferSize{0};
-  if (dmaChannel == spi::DmaChannel::DISABLED) {
+  if (dmaChannel == DmaChannel::DISABLED) {
     maxTransferSize = SOC_SPI_MAXIMUM_BUFFER_SIZE;
   } else {
     maxTransferSize = DMA_ENABLE;
@@ -38,12 +38,12 @@ common::Error Spi::init(const spi::DmaChannel dmaChannel) {
   return common::Error::OK;
 }
 
-common::Error Spi::addDevice(spi::DeviceHandle& deviceHandle, IGpio& csPin,
-                             const int clockSpeedHz) {
+SpiDeviceHandle Spi::addDevice(IGpio& csPin, const int clockSpeedHz) {
   if (csPin.isGpioAssigned() == false) {
-    return common::Error::INVALID_ARG;
+    return nullptr;
   }
 
+  spi_device_handle_t handle{nullptr};
   spi_device_interface_config_t deviceConfig{};
   deviceConfig.clock_speed_hz = clockSpeedHz;
   deviceConfig.spics_io_num = static_cast<int>(csPin.getNumber());
@@ -54,8 +54,28 @@ common::Error Spi::addDevice(spi::DeviceHandle& deviceHandle, IGpio& csPin,
   deviceConfig.mode = CPOL_0_CPHA_0;
 
   esp_err_t espErrorCode = spi_bus_add_device(
-      static_cast<spi_host_device_t>(config_.host), &deviceConfig,
-      reinterpret_cast<spi_device_handle_t*>(&deviceHandle));
+      static_cast<spi_host_device_t>(config_.host), &deviceConfig, &handle);
+  if (espErrorCode != ESP_OK) {
+    return nullptr;
+  }
+
+  return static_cast<SpiDeviceHandle>(handle);
+}
+
+common::Error Spi::write(SpiDeviceHandle& deviceHandle,
+                         const uint8_t registerAddress, const uint8_t* buffer,
+                         const size_t bufferLength) {
+  const size_t lengthInBits{bufferLength * 8};
+
+  spi_transaction_t transaction{};
+  transaction.addr = static_cast<uint64_t>(registerAddress);
+  transaction.rx_buffer = nullptr;
+  transaction.tx_buffer = buffer;
+  transaction.rxlength = lengthInBits;
+  transaction.length = lengthInBits;
+
+  esp_err_t espErrorCode = spi_device_polling_transmit(
+      (spi_device_handle_t)deviceHandle, &transaction);
   if (espErrorCode != ESP_OK) {
     return common::Error::FAIL;
   }
@@ -63,35 +83,20 @@ common::Error Spi::addDevice(spi::DeviceHandle& deviceHandle, IGpio& csPin,
   return common::Error::OK;
 }
 
-common::Error Spi::write(spi::DeviceHandle& deviceHandle, int registerAddress,
-                         const uint8_t* buffer, size_t bufferLength) {
-  spi_transaction_t t = {};
-  t.addr = registerAddress;
-  t.rx_buffer = NULL;
-  t.tx_buffer = buffer;
-  t.rxlength = bufferLength * 8;
-  t.length = bufferLength * 8;
+common::Error Spi::read(SpiDeviceHandle& deviceHandle,
+                        const uint8_t registerAddress, uint8_t* buffer,
+                        const size_t bufferLength) {
+  const size_t lengthInBits{bufferLength * 8};
 
-  esp_err_t espErrorCode =
-      spi_device_polling_transmit((spi_device_handle_t)deviceHandle, &t);
-  if (espErrorCode != ESP_OK) {
-    return common::Error::FAIL;
-  }
+  spi_transaction_t transaction{};
+  transaction.addr = static_cast<uint64_t>(registerAddress);
+  transaction.rx_buffer = buffer;
+  transaction.tx_buffer = nullptr;
+  transaction.rxlength = lengthInBits;
+  transaction.length = lengthInBits;
 
-  return common::Error::OK;
-}
-
-common::Error Spi::read(spi::DeviceHandle& deviceHandle, int registerAddress,
-                        uint8_t* buffer, size_t bufferLength) {
-  spi_transaction_t t = {};
-  t.addr = registerAddress;
-  t.rx_buffer = buffer;
-  t.tx_buffer = NULL;
-  t.rxlength = bufferLength * 8;
-  t.length = bufferLength * 8;
-
-  esp_err_t espErrorCode =
-      spi_device_polling_transmit((spi_device_handle_t)deviceHandle, &t);
+  esp_err_t espErrorCode = spi_device_polling_transmit(
+      (spi_device_handle_t)deviceHandle, &transaction);
   if (espErrorCode != ESP_OK) {
     return common::Error::FAIL;
   }

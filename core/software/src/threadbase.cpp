@@ -36,8 +36,8 @@ void ThreadBase::suspend_() {
 
 void ThreadBase::resume_() { vTaskResume(static_cast<TaskHandle_t>(handle_)); }
 
-void ThreadBase::resumeFromISR_() {
-  xTaskResumeFromISR(static_cast<TaskHandle_t>(handle_));
+void ThreadBase::resumeFromISR_(ThreadHandle handle) {
+  xTaskResumeFromISR(static_cast<TaskHandle_t>(handle));
 }
 
 void ThreadBase::delete_() {

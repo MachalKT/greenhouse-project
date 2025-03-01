@@ -2,41 +2,10 @@
 #include <cstdint>
 #include <vector>
 
-#include "interfaces/igpio.hpp"
+#include "igpio.hpp"
 #include "types.hpp"
 
 namespace hw {
-namespace gpio {
-/**
- * @brief Gpio mode.
- */
-enum class Mode : uint8_t {
-  DISABLE = 0,
-  INPUT,
-  OUTPUT,
-};
-
-/**
- * @brief Gpio level.
- */
-enum class Level : uint8_t {
-  LOW = 0,
-  HIGH,
-};
-
-/**
- * @brief Gpio interrupt type.
- */
-enum class InterruptType : uint8_t {
-  DISABLE = 0,
-  RISING_EDGE,
-  FALLING_EDGE,
-  RISING_AND_FALLING_EDGE,
-  LOW_LEVEL,
-  HIGH_LEVEL,
-};
-} // namespace gpio
-
 class Gpio final : public IGpio {
   public:
     /**
@@ -44,7 +13,7 @@ class Gpio final : public IGpio {
      *
      * @param number Gpio number.
      */
-    explicit Gpio(const gpio::Number number);
+    explicit Gpio(const GpioNumber number);
 
     /**
      * @brief Gpio set mode.Gpio can be set to input or output mode.
@@ -54,9 +23,9 @@ class Gpio final : public IGpio {
      * @return
      *  - common::Error::OK: Success.
      *  - common::Error::FAIL: Fail.
-     *  - common::Error::INVALID_STATE: Pin is not assigned.
+     *  - common::Error::INVALID_STATE: Gpio is not assigned.
      */
-    common::Error setMode(const gpio::Mode mode) override;
+    common::Error setMode(const GpioMode mode) override;
 
     /**
      * @brief Set gpio level.
@@ -66,9 +35,9 @@ class Gpio final : public IGpio {
      * @return
      *   - common::Error::OK: Success.
      *   - common::Error::FAIL: Fail.
-     *   - common::Error::INVALID_STATE: Pin is not set in output mode.
+     *   - common::Error::INVALID_STATE: Gpio is not set in output mode.
      */
-    common::Error setLevel(const gpio::Level level) override;
+    common::Error setLevel(const GpioLevel level) override;
 
     /**
      * @brief Configure pull up or pull down resistor.
@@ -79,28 +48,28 @@ class Gpio final : public IGpio {
      * @return
      *   - common::Error::OK: Success.
      *   - common::Error::FAIL: Fail.
-     *   - common::Error::INVALID_STATE: Pin is not assigned.
+     *   - common::Error::INVALID_STATE: Gpio is not assigned.
      */
     common::Error configurePullUpDown(const bool pullUpEnable,
                                       const bool pullDownEnable) override;
 
     /**
      * @brief Get gpio level.
-     * @note if pin is not assigned, return gpio::Level::LOW.
+     * @note if gpio is not assigned, return GpioLevel::LOW.
      *
      * @return
-     *   - gpio::Level::LOW: Low level.
-     *   - gpio::Level::HIGH: High level.
+     *   - GpioLevel::LOW: Low level.
+     *   - GpioLevel::HIGH: High level.
      */
-    gpio::Level getLevel() const override;
+    GpioLevel getLevel() const override;
 
     /**
      * @brief Get gpio number.
-     * @note If pin is not assigned, return INVALID_NUMBER (-1).
+     * @note If gpio is not assigned, return INVALID_GPIO_NUMBER (-1).
      *
-     * @return gpio::Number: Gpio number.
+     * @return GpioNumber Gpio number.
      */
-    gpio::Number getNumber() const override;
+    GpioNumber getNumber() const override;
 
     /**
      * @brief Set interrupt.
@@ -112,9 +81,9 @@ class Gpio final : public IGpio {
      * @return
      *   - common::Error::OK: Success.
      *   - common::Error::FAIL: Fail.
-     *   - common::Error::INVALID_STATE: Pin is not assigned.
+     *   - common::Error::INVALID_STATE: Gpio is not assigned.
      */
-    common::Error setInterrupt(const gpio::InterruptType interruptType,
+    common::Error setInterrupt(const GpioInterruptType interruptType,
                                common::Callback interruptCallback,
                                common::Argument callbackData) override;
 
@@ -137,12 +106,12 @@ class Gpio final : public IGpio {
      */
     common::Error setIsrService_();
 
-    static constexpr int8_t FIRST_NUMBER{0};
-    static constexpr int8_t LAST_NUMBER{39};
-    static std::vector<gpio::Number> usedGpioNumbers_;
+    static constexpr int8_t FIRST_GPIO_NUMBER{0};
+    static constexpr int8_t LAST_GPIO_NUMBER{39};
+    static std::vector<GpioNumber> usedGpioNumbers_;
     bool isInterruptEnabled_{false};
-    int8_t number_{gpio::INVALID_NUMBER};
-    gpio::Mode mode_{gpio::Mode::DISABLE};
+    int8_t number_{INVALID_GPIO_NUMBER};
+    GpioMode mode_{GpioMode::DISABLE};
 };
 
 } // namespace hw

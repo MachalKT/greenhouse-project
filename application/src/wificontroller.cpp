@@ -33,14 +33,14 @@ common::Error WifiController::init() {
   std::string password{""};
 
   common::Error errorCode =
-      readWifiCredential_(ssid, common::key::SSID, common::key::SSID_SIZE);
+      readWifiCredential_(ssid, def::key::SSID, def::key::SSID_SIZE);
   if (errorCode != common::Error::OK) {
     ESP_LOGE(TAG.data(), "Cannot read ssid from nvs");
     return common::Error::FAIL;
   }
 
-  errorCode = readWifiCredential_(password, common::key::PASSWORD,
-                                  common::key::PASSWORD_SIZE);
+  errorCode = readWifiCredential_(password, def::key::PASSWORD,
+                                  def::key::PASSWORD_SIZE);
   if (errorCode != common::Error::OK) {
     ESP_LOGE(TAG.data(), "Cannot read password from nvs");
     return common::Error::FAIL;

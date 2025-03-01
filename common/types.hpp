@@ -17,7 +17,7 @@ enum class Error : uint8_t {
   NOT_FOUND,
 };
 
-struct MeasurementData {
+struct __attribute__((packed)) Telemetry {
     float temperatureC{0.0f};
     float humidityRh{0.0f};
 };

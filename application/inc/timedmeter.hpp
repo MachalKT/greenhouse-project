@@ -58,7 +58,7 @@ class TimedMeter {
     void takeMeasurement_();
 
     Config config_;
-    bool isReadyToMeasure_{true};
+    bool isReadyToMeasure_{false};
 };
 
 } // namespace app

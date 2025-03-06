@@ -1,4 +1,4 @@
-set(SRC src/i2c.cpp src/hrtimer.cpp src/gpio.cpp src/spi.cpp src/adc.cpp src/nvsstore.cpp)
+set(SRC src/i2c.cpp src/hrtimer.cpp src/gpio.cpp src/spi.cpp src/adc.cpp src/nvsstore.cpp src/ledc.cpp)
 
 idf_component_register(
     SRCS ${SRC}

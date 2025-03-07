@@ -7,6 +7,7 @@
 #include "spi.hpp"
 #include "timer.hpp"
 #include "wificontroller.hpp"
+#include "ws2812b.hpp"
 #include <string_view>
 
 namespace {
@@ -87,6 +88,13 @@ void app_main(void) {
   common::Telemetry telemetry{};
   app::RadioThread radioThread{{rfm95, radiorequestTimer, telemetry}};
   radioThread.start();
+
+  hw::Gpio redPin{12};
+  hw::Gpio greenPin{27};
+  hw::Gpio bluePin{26};
+  led::Ws2812b led{{redPin, greenPin, bluePin}};
+  led.init();
+  led.setColor(led::Color::BLUE);
 
   while (1) {
     sw::delayMs(10);

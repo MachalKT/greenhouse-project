@@ -1,8 +1,6 @@
 #include "ledc.hpp"
 #include "driver/ledc.h"
 
-static constexpr ledc_timer_bit_t LED_PWM_RES = LEDC_TIMER_8_BIT;
-
 namespace hw {
 Ledc::Ledc(Config config) : config_{config} {}
 

@@ -3,6 +3,7 @@
 #include "esp_log.h"
 #include "gpio.hpp"
 #include "nvsstore.hpp"
+#include "queue.hpp"
 #include "radiothread.hpp"
 #include "rfm95.hpp"
 #include "spi.hpp"
@@ -14,6 +15,8 @@
 namespace {
 static constexpr std::string_view TAG{"HUB"};
 } // namespace
+
+enum class Event { CONNECTION, CONNECTED, DISCONNECTED };
 
 extern "C" {
 void app_main(void) {
@@ -106,6 +109,8 @@ void app_main(void) {
     ESP_LOGE(TAG.data(), "Button init fail");
   }
   button.setCallback([](void* arg) { ESP_LOGI("BUTTON", "Click"); }, nullptr);
+
+  sw::Queue<Event> queue{5};
 
   while (1) {
     button.yield();

@@ -1,3 +1,4 @@
+#include "button.hpp"
 #include "delay.hpp"
 #include "esp_log.h"
 #include "gpio.hpp"
@@ -80,7 +81,7 @@ void app_main(void) {
   }
 
   timer::sw::Timer radiorequestTimer;
-  radiorequestTimer.init();
+  errorCode = radiorequestTimer.init();
   if (errorCode != common::Error::OK) {
     ESP_LOGE(TAG.data(), "RadioTimer init fail");
   }
@@ -93,10 +94,21 @@ void app_main(void) {
   hw::Gpio greenPin{27};
   hw::Gpio bluePin{26};
   led::Ws2812b led{{redPin, greenPin, bluePin}};
-  led.init();
-  led.setColor(led::Color::BLUE);
+  errorCode = led.init();
+  if (errorCode != common::Error::OK) {
+    ESP_LOGE(TAG.data(), "Led init fail");
+  }
+
+  hw::Gpio buttonPin{34};
+  ui::Button button{buttonPin};
+  errorCode = button.init();
+  if (errorCode != common::Error::OK) {
+    ESP_LOGE(TAG.data(), "Button init fail");
+  }
+  button.setCallback([](void* arg) { ESP_LOGI("BUTTON", "Click"); }, nullptr);
 
   while (1) {
+    button.yield();
     sw::delayMs(10);
   }
 }

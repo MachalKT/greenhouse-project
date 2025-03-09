@@ -3,7 +3,7 @@
 #include "driver/gpio.h"
 
 namespace hw {
-
+bool Gpio::isInterruptEnabled_{false};
 std::vector<GpioNumber> Gpio::usedGpioNumbers_{};
 
 Gpio::Gpio(GpioNumber number) {

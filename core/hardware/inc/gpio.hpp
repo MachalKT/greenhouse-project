@@ -109,7 +109,7 @@ class Gpio final : public IGpio {
     static constexpr int8_t FIRST_GPIO_NUMBER{0};
     static constexpr int8_t LAST_GPIO_NUMBER{39};
     static std::vector<GpioNumber> usedGpioNumbers_;
-    bool isInterruptEnabled_{false};
+    static bool isInterruptEnabled_;
     int8_t number_{INVALID_GPIO_NUMBER};
     GpioMode mode_{GpioMode::DISABLE};
 };

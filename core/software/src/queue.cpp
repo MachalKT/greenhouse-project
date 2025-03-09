@@ -1,13 +1,14 @@
 #include "queue.hpp"
 #include "freertos/idf_additions.h"
+#include <vector>
 
 namespace sw {
-template <typename T> Queue<T>::Queue(size_t size) : size_{size} {}
+Queue::Queue(size_t size, size_t itemSize) : size_{size}, itemSize_{itemSize} {}
 
-template <typename T> Queue<T>::~Queue() {}
+Queue::~Queue() {}
 
-template <typename T> common::Error Queue<T>::init() {
-  handle_ = static_cast<Handle>(xQueueCreate(size_, sizeof(T)));
+common::Error Queue::init() {
+  handle_ = static_cast<Handle>(xQueueCreate(size_, itemSize_));
   if (not handle_) {
     return common::Error::FAIL;
   }
@@ -15,12 +16,17 @@ template <typename T> common::Error Queue<T>::init() {
   return common::Error::OK;
 }
 
-template <typename T> common::Error Queue<T>::send(T& data) {
+common::Error Queue::send(const uint8_t* data, const size_t dataSize) {
+  if (dataSize != itemSize_) {
+    return common::Error::INVALID_ARG;
+  }
+
   if (not handle_) {
     return common::Error::INVALID_STATE;
   }
 
-  BaseType_t baseErrorCode = xQueueSend(handle_, data, TICKS_TO_WAIT);
+  BaseType_t baseErrorCode =
+      xQueueSend(static_cast<QueueHandle_t>(handle_), data, TICKS_TO_WAIT);
   if (baseErrorCode != pdPASS) {
     return common::Error::FAIL;
   }
@@ -28,29 +34,21 @@ template <typename T> common::Error Queue<T>::send(T& data) {
   return common::Error::OK;
 }
 
-template <typename T> common::Error Queue<T>::receive(T& data) {
-  if (not handle_) {
-    return common::Error::INVALID_STATE;
-  }
-
-  BaseType_t baseErrorCode = xQueueReceive(handle_, data, TICKS_TO_WAIT);
-  if (baseErrorCode != pdPASS) {
-    return common::Error::FAIL;
-  }
-
-  return common::Error::OK;
-}
-
-template <typename T>
-void Queue<T>::setCallback(callback cb, common::Argument arg) {
+void Queue::setReceiveCallback(transport::receiveCb cb, common::Argument arg) {
   cb_ = cb;
   arg_ = arg;
 }
 
-template <typename T> void Queue<T>::yield() {
-  T data;
-  if (receive(data, 0)) { // Timeout = 0 → tryb non-blocking
-    cb_(data, arg_);
+void Queue::yield() {
+  if (not handle_) {
+    return;
+  }
+
+  std::vector<uint8_t> data(itemSize_);
+  if (xQueueReceive(static_cast<QueueHandle_t>(handle_), data.data(),
+                    TICKS_TO_WAIT) ==
+      pdPASS) { // Timeout = 0 → tryb non-blocking
+    cb_(data.data(), itemSize_, arg_);
   }
 }
 

@@ -16,7 +16,7 @@ namespace {
 static constexpr std::string_view TAG{"HUB"};
 } // namespace
 
-enum class Event { CONNECTION, CONNECTED, DISCONNECTED };
+enum class Event : uint8_t { CONNECTION, CONNECTED, DISCONNECTED };
 
 extern "C" {
 void app_main(void) {
@@ -110,10 +110,32 @@ void app_main(void) {
   }
   button.setCallback([](void* arg) { ESP_LOGI("BUTTON", "Click"); }, nullptr);
 
-  sw::Queue<Event> queue{5};
+  Event event = Event::CONNECTION;
+  sw::Queue queue{5, sizeof(Event)};
+  queue.init();
+  queue.setReceiveCallback(
+      [](const uint8_t* data, const size_t dataSize, common::Argument arg) {
+        Event event = static_cast<Event>(*data);
+        ESP_LOGI("TAG", "EVENT: %d", static_cast<int>(event));
+      },
+      nullptr);
+  queue.send(reinterpret_cast<uint8_t*>(&event), sizeof(event));
 
+  timer::sw::Timer timer;
+  timer.init();
+  timer.setCallback(
+      [](void* arg) {
+        Event event = Event::CONNECTED;
+        sw::Queue* q = static_cast<sw::Queue*>(arg);
+        q->send(reinterpret_cast<uint8_t*>(&event), sizeof(event));
+      },
+      &queue);
+  timer.startPeriodic(common::utils::msToUs<common::Time>(20'000));
+
+  sw::delayMs(10'000);
   while (1) {
     button.yield();
+    queue.yield();
     sw::delayMs(10);
   }
 }

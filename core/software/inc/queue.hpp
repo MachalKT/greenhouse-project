@@ -1,5 +1,6 @@
 #pragma once
 
+#include "itransceiver.hpp"
 #include "ticks.hpp"
 #include "types.hpp"
 #include <cstddef>
@@ -7,31 +8,29 @@
 
 namespace sw {
 
-template <typename T> class Queue {
+class Queue final : public transport::ITransceiver {
   public:
-    using callback = std::function<void(T, common::Argument)>;
-
     using Handle = void*;
 
-    Queue(size_t size);
+    Queue(size_t size, size_t itemSize);
 
     ~Queue();
 
     common::Error init();
 
-    common::Error send(T& data);
+    common::Error send(const uint8_t* data, const size_t dataSize) override;
 
-    common::Error receive(T& data);
+    void setReceiveCallback(transport::receiveCb cb,
+                            common::Argument arg) override;
 
-    void setCallback(callback cb, common::Argument arg);
-
-    void yield();
+    void yield() override;
 
   private:
     static constexpr ::sw::Ticks TICKS_TO_WAIT{0};
     Handle handle_;
     size_t size_;
-    callback cb_;
+    size_t itemSize_;
+    transport::receiveCb cb_;
     common::Argument arg_;
 };
 

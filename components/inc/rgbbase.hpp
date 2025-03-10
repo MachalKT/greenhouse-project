@@ -3,7 +3,7 @@
 #include "iled.hpp"
 #include "types.hpp"
 
-namespace led {
+namespace ui {
 /**
  * @class RgbBase
  * @brief Base class for RGB LED control.
@@ -26,7 +26,7 @@ class RgbBase : public ILed {
      *   - common::Error::OK: Success.
      *   - common::Error::FAIL: Fail.
      */
-    virtual common::Error setColor(const Color color) = 0;
+    virtual common::Error setColor(const LedColor color) = 0;
 
     /**
      * @brief Set the color and brightness of the RGB LED.
@@ -38,7 +38,7 @@ class RgbBase : public ILed {
      *   - common::Error::OK: Success.
      *   - common::Error::FAIL: Fail.
      */
-    common::Error setColor(const Color color, uint16_t brightness) override;
+    common::Error setColor(const LedColor color, uint16_t brightness) override;
 
   protected:
     /**
@@ -65,4 +65,4 @@ class RgbBase : public ILed {
     const uint8_t resolution_;
 };
 
-} // namespace led
+} // namespace ui

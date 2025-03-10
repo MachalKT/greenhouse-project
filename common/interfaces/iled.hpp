@@ -3,8 +3,8 @@
 #include "types.hpp"
 #include <cstdint>
 
-namespace led {
-enum class Color {
+namespace ui {
+enum class LedColor {
   RED,
   GREEN,
   BLUE,
@@ -18,8 +18,10 @@ enum class Color {
 };
 
 class ILed {
-    virtual common::Error setColor(const Color color) = 0;
+  public:
+    virtual common::Error setColor(const LedColor color) = 0;
 
-    virtual common::Error setColor(const Color color, uint16_t brightness) = 0;
+    virtual common::Error setColor(const LedColor color,
+                                   uint16_t brightness) = 0;
 };
-} // namespace led
+} // namespace ui

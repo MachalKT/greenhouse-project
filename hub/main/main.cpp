@@ -8,6 +8,7 @@
 #include "rfm95.hpp"
 #include "spi.hpp"
 #include "timer.hpp"
+#include "uithread.hpp"
 #include "wificontroller.hpp"
 #include "ws2812b.hpp"
 #include <string_view>
@@ -70,31 +71,16 @@ void app_main(void) {
     ESP_LOGE(TAG.data(), "wifiReconnectTimer init fail");
   }
 
-  app::WifiController wifiController{{wifiReconnectTimer, storage}};
-  errorCode = wifiController.init();
-  if (errorCode != common::Error::OK) {
-    ESP_LOGE(TAG.data(), "wifiController init fail");
-  }
-
-  errorCode = wifiController.start();
-  if (errorCode != common::Error::OK) {
-    ESP_LOGE(TAG.data(), "WifiController start fail");
-  }
-
   timer::sw::Timer radiorequestTimer;
   errorCode = radiorequestTimer.init();
   if (errorCode != common::Error::OK) {
     ESP_LOGE(TAG.data(), "RadioTimer init fail");
   }
 
-  common::Telemetry telemetry{};
-  app::RadioThread radioThread{{rfm95, radiorequestTimer, telemetry}};
-  radioThread.start();
-
   hw::Gpio redPin{12};
   hw::Gpio greenPin{27};
   hw::Gpio bluePin{26};
-  led::Ws2812b led{{redPin, greenPin, bluePin}};
+  ui::Ws2812b led{{redPin, greenPin, bluePin}};
   errorCode = led.init();
   if (errorCode != common::Error::OK) {
     ESP_LOGE(TAG.data(), "Led init fail");
@@ -106,7 +92,36 @@ void app_main(void) {
   if (errorCode != common::Error::OK) {
     ESP_LOGE(TAG.data(), "Button init fail");
   }
-  button.setCallback([](void* arg) { ESP_LOGI("BUTTON", "Click"); }, nullptr);
+
+  sw::Queue<def::ui::LedEvent> queueLedEvent{5};
+  errorCode = queueLedEvent.init();
+  if (errorCode != common::Error::OK) {
+    ESP_LOGE(TAG.data(), "QueueLedEvent init fail");
+  }
+
+  app::UiThread uiThread{{button, led, queueLedEvent}};
+  errorCode = uiThread.start();
+  if (errorCode != common::Error::OK) {
+    ESP_LOGE(TAG.data(), "UiThread start fail");
+  }
+
+  common::Telemetry telemetry{};
+  app::RadioThread radioThread{{rfm95, radiorequestTimer, telemetry}};
+  radioThread.start();
+  if (errorCode != common::Error::OK) {
+    ESP_LOGE(TAG.data(), "RadioThread start fail");
+  }
+
+  app::WifiController wifiController{{wifiReconnectTimer, storage}};
+  errorCode = wifiController.init();
+  if (errorCode != common::Error::OK) {
+    ESP_LOGE(TAG.data(), "WifiController init fail");
+  }
+
+  errorCode = wifiController.start();
+  if (errorCode != common::Error::OK) {
+    ESP_LOGE(TAG.data(), "WifiController start fail");
+  }
 
   while (1) {
     button.yield();

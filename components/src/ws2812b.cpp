@@ -1,6 +1,6 @@
 #include "ws2812b.hpp"
 
-namespace led {
+namespace ui {
 Ws2812b::Ws2812b(Config config)
     : RgbBase(DUTY_RESOLUTION), config_{config},
       ledc{{hw::Ledc::TimerNumber::_0, hw::Ledc::SpeedMode::HIGH}} {}
@@ -37,7 +37,7 @@ common::Error Ws2812b::init() {
   return common::Error::OK;
 }
 
-common::Error Ws2812b::setColor(Color color) {
+common::Error Ws2812b::setColor(LedColor color) {
   RgbBase::setColor(color, getMaxBrightness_());
 
   ledc.setDuty(hw::Ledc::Channel::_0, rgbColor.red);
@@ -47,10 +47,10 @@ common::Error Ws2812b::setColor(Color color) {
   return common::Error::OK;
 }
 
-common::Error Ws2812b::setColor(const Color color, uint16_t brightness) {
+common::Error Ws2812b::setColor(const LedColor color, uint16_t brightness) {
   RgbBase::setColor(color, brightness);
 
   return common::Error::OK;
 }
 
-} // namespace led
+} // namespace ui

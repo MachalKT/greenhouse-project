@@ -6,7 +6,7 @@
 #include "rgbbase.hpp"
 #include "types.hpp"
 
-namespace led {
+namespace ui {
 
 /**
  * @class Ws2812b
@@ -48,7 +48,7 @@ class Ws2812b final : public RgbBase {
      *   - common::Error::OK: Success.
      *   - common::Error::FAIL: Fail.
      */
-    common::Error setColor(Color color) override;
+    common::Error setColor(LedColor color) override;
 
     /**
      * @brief Set the color and brightness of the WS2812B LED.
@@ -60,7 +60,7 @@ class Ws2812b final : public RgbBase {
      *   - common::Error::OK: Success.
      *   - common::Error::FAIL: Fail.
      */
-    common::Error setColor(const Color color, uint16_t brightness) override;
+    common::Error setColor(const LedColor color, uint16_t brightness) override;
 
   private:
     static constexpr uint32_t PWM_FREQUENCY_HZ{1000};
@@ -71,4 +71,4 @@ class Ws2812b final : public RgbBase {
     hw::Ledc ledc;
 };
 
-} // namespace led
+} // namespace ui

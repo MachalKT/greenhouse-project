@@ -38,6 +38,9 @@ void app_main(void) {
   hw::Gpio rfm95ChipSelect{5};
   hw::SpiDeviceHandle spiRfm95Handle =
       spi.addDevice(rfm95ChipSelect, radio::Rfm95::SPI_CLOCK_SPEED_HZ);
+  if (spiRfm95Handle == nullptr) {
+    ESP_LOGE(TAG.data(), "spi add rfm95 device fail");
+  }
 
   hw::Gpio rst{4};
   hw::Gpio dio0{17};
@@ -112,7 +115,8 @@ void app_main(void) {
     ESP_LOGE(TAG.data(), "RadioThread start fail");
   }
 
-  app::WifiController wifiController{{wifiReconnectTimer, storage}};
+  app::WifiController wifiController{
+      {wifiReconnectTimer, storage, queueLedEvent}};
   errorCode = wifiController.init();
   if (errorCode != common::Error::OK) {
     ESP_LOGE(TAG.data(), "WifiController init fail");

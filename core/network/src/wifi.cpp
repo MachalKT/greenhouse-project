@@ -91,7 +91,6 @@ common::Error Wifi::connect() {
   if (not isStaMode()) {
     return common::Error::INVALID_STATE;
   }
-
   esp_err_t espErrorCode = esp_wifi_connect();
   return espErrorCode == ESP_OK ? common::Error::OK : common::Error::FAIL;
 }

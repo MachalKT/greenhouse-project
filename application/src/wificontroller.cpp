@@ -119,6 +119,7 @@ void WifiController::ipEventHandler_(common::Argument arg,
 
   if (eventId == IP_EVENT_STA_GOT_IP) {
     wifiController->showIp_(eventData);
+    wifiController->config_.queue.send(def::ui::LedEvent::WIFI_CONNECTED);
   }
 }
 
@@ -129,10 +130,12 @@ net::Wifi& WifiController::getWifiInstance_() {
 common::Error WifiController::reconnect_() {
   if (reconnectAttempt_ > MAX_RECONNECT_ATTEMPTS) {
     reconnectAttempt_ = 0;
+    config_.queue.send(def::ui::LedEvent::WIFI_DISCONNECTED);
     return config_.reconnectTimer.startOnce(RECONNECT_TIME_US);
   }
 
   ++reconnectAttempt_;
+  config_.queue.send(def::ui::LedEvent::WIFI_CONNECTION);
   return getWifiInstance_().connect();
 }
 

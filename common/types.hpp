@@ -44,4 +44,15 @@ using Id = int32_t;
 // Pointer to a function handling Wi-Fi events.
 using HandlerFunction = void (*)(common::Argument, Base, Id, Data);
 } // namespace event
+
+namespace ui {
+enum class LedEvent : uint8_t {
+  WIFI_CONNECTING,
+  WIFI_CONNECTED,
+  WIFI_DISCONNECTED,
+  RADIO_CONNECTED,
+  RADIO_DISCONNECTED,
+};
+}
+
 } // namespace common

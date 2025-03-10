@@ -1,6 +1,5 @@
 #pragma once
 
-#include "itransceiver.hpp"
 #include "ticks.hpp"
 #include "types.hpp"
 #include <cstddef>
@@ -8,29 +7,46 @@
 
 namespace sw {
 
-class Queue final : public transport::ITransceiver {
+template <typename T> class IQueueSender {
   public:
-    using Handle = void*;
+    virtual common::Error send(const T data) = 0;
+};
 
-    Queue(size_t size, size_t itemSize);
+template <typename T> class IQueueReceiver {
+  public:
+    using Callback = std::function<void(T, common::Argument)>;
+
+    virtual void setCallback(Callback cb, common::Argument arg) = 0;
+
+    virtual void yield() = 0;
+};
+
+template <typename T>
+class Queue : public IQueueSender<T>, public IQueueReceiver<T> {
+  public:
+    using Callback = IQueueReceiver<T>::Callback;
+
+    Queue(const size_t size);
 
     ~Queue();
 
     common::Error init();
 
-    common::Error send(const uint8_t* data, const size_t dataSize) override;
+    common::Error send(const T data) override;
 
-    void setReceiveCallback(transport::receiveCb cb,
-                            common::Argument arg) override;
+    void setCallback(Callback cb, common::Argument arg);
 
-    void yield() override;
+    void yield();
 
   private:
+    using Handle = void*;
+
+    common::Error receive_(T& data);
+
     static constexpr ::sw::Ticks TICKS_TO_WAIT{0};
     Handle handle_;
     size_t size_;
-    size_t itemSize_;
-    transport::receiveCb cb_;
+    Callback cb_;
     common::Argument arg_;
 };
 

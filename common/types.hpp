@@ -44,4 +44,5 @@ using Id = int32_t;
 // Pointer to a function handling Wi-Fi events.
 using HandlerFunction = void (*)(common::Argument, Base, Id, Data);
 } // namespace event
+
 } // namespace common

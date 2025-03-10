@@ -3,6 +3,7 @@
 #include "esp_log.h"
 #include "gpio.hpp"
 #include "nvsstore.hpp"
+#include "queue.hpp"
 #include "radiothread.hpp"
 #include "rfm95.hpp"
 #include "spi.hpp"

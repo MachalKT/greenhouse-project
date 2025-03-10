@@ -45,14 +45,4 @@ using Id = int32_t;
 using HandlerFunction = void (*)(common::Argument, Base, Id, Data);
 } // namespace event
 
-namespace ui {
-enum class LedEvent : uint8_t {
-  WIFI_CONNECTING,
-  WIFI_CONNECTED,
-  WIFI_DISCONNECTED,
-  RADIO_CONNECTED,
-  RADIO_DISCONNECTED,
-};
-}
-
 } // namespace common

@@ -16,8 +16,6 @@ namespace {
 static constexpr std::string_view TAG{"HUB"};
 } // namespace
 
-enum class Event : uint8_t { CONNECTION, CONNECTED, DISCONNECTED };
-
 extern "C" {
 void app_main(void) {
   common::Error errorCode{common::Error::OK};
@@ -110,17 +108,7 @@ void app_main(void) {
   }
   button.setCallback([](void* arg) { ESP_LOGI("BUTTON", "Click"); }, nullptr);
 
-  sw::Queue<common::ui::LedEvent> queue{5};
-  queue.init();
-  queue.send(common::ui::LedEvent::RADIO_CONNECTED);
-  queue.setCallback(
-      [](common::ui::LedEvent event, void* arg) {
-        ESP_LOGI("QUEUE", "event: %d", static_cast<int>(event));
-      },
-      nullptr);
-  sw::delayMs(10'000);
   while (1) {
-    queue.yield();
     button.yield();
     sw::delayMs(10);
   }

@@ -44,7 +44,9 @@ void UiThread::handleLedEvent_(def::ui::LedEvent& event) {
   case LedEvent::WIFI_DISCONNECTED:
     color = ui::LedColor::RED;
     break;
-  case LedEvent::RADIO_DISCONNECTED:
+  case LedEvent::RADIO_COMMUNICATION:
+    break;
+  case LedEvent::RADIO_TIMEOUT:
     color = ui::LedColor::MAGENTA;
     break;
   default:

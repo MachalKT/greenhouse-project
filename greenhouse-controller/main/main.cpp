@@ -3,7 +3,7 @@
 #include "gpio.hpp"
 #include "hrtimer.hpp"
 #include "i2c.hpp"
-#include "radiothread.hpp"
+#include "radiothreadcontroller.hpp"
 #include "rfm95.hpp"
 #include "sht40.hpp"
 #include "spi.hpp"
@@ -94,7 +94,7 @@ void app_main(void) {
   app::TimedMeter timedMeter{{measurementTimer, sht40, sht40, telemetry}};
   timedMeter.start(MEASUREMENT_TIME_US);
 
-  app::RadioThread radioThread{{rfm95, std::nullopt, telemetry}};
+  app::RadioThreadController radioThread{{rfm95, telemetry}};
   radioThread.start();
 
   while (1) {

@@ -108,7 +108,13 @@ void app_main(void) {
     ESP_LOGE(TAG.data(), "QueueLedEvent init fail");
   }
 
-  app::UiThread uiThread{{button, led, queueLedEvent}};
+  timer::sw::Timer ledTimer;
+  errorCode = ledTimer.init();
+  if (errorCode != common::Error::OK) {
+    ESP_LOGE(TAG.data(), "Led timer init fail");
+  }
+
+  app::UiThread uiThread{{button, led, queueLedEvent, ledTimer}};
   errorCode = uiThread.start();
   if (errorCode != common::Error::OK) {
     ESP_LOGE(TAG.data(), "UiThread start fail");

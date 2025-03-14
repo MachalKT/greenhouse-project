@@ -12,6 +12,7 @@ static constexpr std::string_view PASSWORD{"pass"};
 
 namespace ui {
 enum class LedEvent : uint8_t {
+  UNKNOWN,
   WIFI_CONNECTION,
   WIFI_CONNECTED,
   WIFI_DISCONNECTED,

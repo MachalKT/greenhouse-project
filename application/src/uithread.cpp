@@ -13,8 +13,17 @@ UiThread::UiThread(Config config)
       config_{config} {}
 
 void UiThread::run_() {
-  config_.button.setCallback([](void* arg) { ESP_LOGI("BUTTON", "Click"); },
-                             this);
+  config_.ledTimer.setCallback(
+      [](common::Argument arg) {
+        assert(arg);
+        UiThread* thread = static_cast<UiThread*>(arg);
+        thread->handleLedEvent_(thread->radioLedEvent_);
+      },
+      this);
+
+  config_.button.setCallback(
+      [](common::Argument arg) { ESP_LOGI("BUTTON", "Click"); }, this);
+
   config_.queue.setCallback(
       [](def::ui::LedEvent event, common::Argument arg) {
         assert(arg);
@@ -36,26 +45,38 @@ void UiThread::handleLedEvent_(def::ui::LedEvent& event) {
   using def::ui::LedEvent;
   switch (event) {
   case LedEvent::WIFI_CONNECTION:
+    wifiLedEvent_ = event;
     color = ui::LedColor::BLUE;
     break;
   case LedEvent::WIFI_CONNECTED:
+    wifiLedEvent_ = event;
     color = ui::LedColor::GREEN;
     break;
   case LedEvent::WIFI_DISCONNECTED:
+    wifiLedEvent_ = event;
     color = ui::LedColor::RED;
+    setLedTimer_();
     break;
   case LedEvent::RADIO_COMMUNICATION:
+    radioLedEvent_ = event;
     break;
   case LedEvent::RADIO_TIMEOUT:
+    radioLedEvent_ = event;
     color = ui::LedColor::MAGENTA;
     break;
   default:
-    color = ui::LedColor::YELLOW;
+    color = ui::LedColor::ORANGE;
   }
 
   common::Error errorCode = config_.led.setColor(color);
   if (errorCode != common::Error::OK) {
     ESP_LOGI(TAG.data(), "set color fail");
+  }
+}
+
+void UiThread::setLedTimer_() {
+  if (radioLedEvent_ == def::ui::LedEvent::RADIO_TIMEOUT) {
+    config_.ledTimer.startOnce(DISCONNECTED_LED_TIME_US);
   }
 }
 

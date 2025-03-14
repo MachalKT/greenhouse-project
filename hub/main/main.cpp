@@ -4,7 +4,7 @@
 #include "gpio.hpp"
 #include "nvsstore.hpp"
 #include "queue.hpp"
-#include "radiothread.hpp"
+#include "radiothreadhub.hpp"
 #include "rfm95.hpp"
 #include "spi.hpp"
 #include "timer.hpp"
@@ -77,7 +77,13 @@ void app_main(void) {
   timer::sw::Timer radiorequestTimer;
   errorCode = radiorequestTimer.init();
   if (errorCode != common::Error::OK) {
-    ESP_LOGE(TAG.data(), "RadioTimer init fail");
+    ESP_LOGE(TAG.data(), "Radio request timer init fail");
+  }
+
+  timer::sw::Timer radioTimeoutTimer;
+  errorCode = radioTimeoutTimer.init();
+  if (errorCode != common::Error::OK) {
+    ESP_LOGE(TAG.data(), "Radio timeout timer init fail");
   }
 
   hw::Gpio redPin{12};
@@ -109,7 +115,8 @@ void app_main(void) {
   }
 
   common::Telemetry telemetry{};
-  app::RadioThread radioThread{{rfm95, radiorequestTimer, telemetry}};
+  app::RadioThreadHub radioThread{
+      {rfm95, radiorequestTimer, radioTimeoutTimer, queueLedEvent, telemetry}};
   radioThread.start();
   if (errorCode != common::Error::OK) {
     ESP_LOGE(TAG.data(), "RadioThread start fail");

@@ -1,7 +1,9 @@
 #pragma once
 
+#include "defs.hpp"
 #include "istorage.hpp"
 #include "itimer.hpp"
+#include "queue.hpp"
 #include "types.hpp"
 #include "utils.hpp"
 #include "wifi.hpp"
@@ -20,6 +22,7 @@ class WifiController {
     struct Config {
         timer::ITimer& reconnectTimer;
         storage::IStorage& storage;
+        sw::IQueueSender<def::ui::LedEvent>& queue;
     };
     /**
      * @brief Constructs a WifiController instance.

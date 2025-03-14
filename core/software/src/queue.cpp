@@ -1,10 +1,15 @@
 #include "queue.hpp"
+#include "defs.hpp"
 #include "freertos/idf_additions.h"
 
 namespace sw {
 template <typename T> Queue<T>::Queue(size_t size) : size_{size} {}
 
-template <typename T> Queue<T>::~Queue() {}
+template <typename T> Queue<T>::~Queue() {
+  if (handle_) {
+    vQueueDelete(static_cast<QueueHandle_t>(handle_));
+  }
+}
 
 template <typename T> common::Error Queue<T>::init() {
   handle_ = static_cast<Handle>(xQueueCreate(size_, sizeof(T)));
@@ -56,5 +61,5 @@ template <typename T> common::Error Queue<T>::receive_(T& data) {
   return common::Error::OK;
 }
 
-template class Queue<common::ui::LedEvent>;
+template class Queue<def::ui::LedEvent>;
 } // namespace sw

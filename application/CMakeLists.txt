@@ -1,4 +1,4 @@
-set(SRC src/timedmeter.cpp src/wificontroller.cpp src/radiothread.cpp)
+set(SRC src/timedmeter.cpp src/wificontroller.cpp src/uithread.cpp src/radiothreadcontroller.cpp src/radiothreadhub.cpp)
 
 idf_component_register(
     SRCS ${SRC}

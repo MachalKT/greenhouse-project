@@ -1,3 +1,4 @@
+#include "awsiotclient.hpp"
 #include "button.hpp"
 #include "delay.hpp"
 #include "esp_log.h"
@@ -9,11 +10,20 @@
 #include "spi.hpp"
 #include "timer.hpp"
 #include "uithread.hpp"
+#include "utils.hpp"
 #include "wificontroller.hpp"
 #include "ws2812b.hpp"
+#include <cstring>
 #include <string_view>
 
 namespace {
+namespace {
+extern const uint8_t
+    binaryAmazonRootCA1[] asm("_binary_amazonRootCA1_pem_start");
+extern const uint8_t
+    binaryCertificate[] asm("_binary_certificate_pem_crt_start");
+extern const uint8_t binaryPrivateKey[] asm("_binary_private_pem_key_start");
+} // namespace
 static constexpr std::string_view TAG{"HUB"};
 } // namespace
 

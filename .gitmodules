@@ -1,0 +1,4 @@
+[submodule "esp-aws-iot"]
+	path = esp-aws-iot
+	url = git@github.com:espressif/esp-aws-iot.git
+	branch = release/v3.1.x

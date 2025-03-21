@@ -111,3 +111,5 @@ class Queue : public IQueueSender<T>, public IQueueReceiver<T> {
 };
 
 } // namespace sw
+
+#include "impl/queue.tpp"

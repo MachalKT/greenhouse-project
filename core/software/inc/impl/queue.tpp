@@ -1,17 +1,20 @@
-#include "queue.hpp"
-#include "defs.hpp"
+#pragma once
+
 #include "freertos/idf_additions.h"
 
-namespace sw {
-template <typename T> Queue<T>::Queue(size_t size) : size_{size} {}
+template <typename T> sw::Queue<T>::Queue(size_t size) : size_{size} {}
 
-template <typename T> Queue<T>::~Queue() {
+template <typename T> sw::Queue<T>::~Queue() {
   if (handle_) {
     vQueueDelete(static_cast<QueueHandle_t>(handle_));
   }
 }
 
-template <typename T> common::Error Queue<T>::init() {
+template <typename T> common::Error sw::Queue<T>::init() {
+  if (size_ == 0) {
+    return common::Error::FAIL;
+  }
+
   handle_ = static_cast<Handle>(xQueueCreate(size_, sizeof(T)));
   if (not handle_) {
     return common::Error::FAIL;
@@ -20,7 +23,7 @@ template <typename T> common::Error Queue<T>::init() {
   return common::Error::OK;
 }
 
-template <typename T> common::Error Queue<T>::send(T data) {
+template <typename T> common::Error sw::Queue<T>::send(T data) {
   if (not handle_) {
     return common::Error::INVALID_STATE;
   }
@@ -35,19 +38,19 @@ template <typename T> common::Error Queue<T>::send(T data) {
 }
 
 template <typename T>
-void Queue<T>::setCallback(Callback cb, common::Argument arg) {
+void sw::Queue<T>::setCallback(Callback cb, common::Argument arg) {
   cb_ = cb;
   arg_ = arg;
 }
 
-template <typename T> void Queue<T>::yield() {
+template <typename T> void sw::Queue<T>::yield() {
   T data;
   if (receive_(data) == common::Error::OK) { // Timeout = 0 → tryb non-blocking
     cb_(data, arg_);
   }
 }
 
-template <typename T> common::Error Queue<T>::receive_(T& data) {
+template <typename T> common::Error sw::Queue<T>::receive_(T& data) {
   if (not handle_) {
     return common::Error::INVALID_STATE;
   }
@@ -60,6 +63,3 @@ template <typename T> common::Error Queue<T>::receive_(T& data) {
 
   return common::Error::OK;
 }
-
-template class Queue<def::ui::LedEvent>;
-} // namespace sw

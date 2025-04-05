@@ -2,6 +2,7 @@
 #include "button.hpp"
 #include "delay.hpp"
 #include "esp_log.h"
+#include "eventgroup.hpp"
 #include "gpio.hpp"
 #include "nvsstore.hpp"
 #include "queue.hpp"
@@ -17,13 +18,11 @@
 #include <string_view>
 
 namespace {
-namespace {
 extern const uint8_t
     binaryAmazonRootCA1[] asm("_binary_amazonRootCA1_pem_start");
 extern const uint8_t
     binaryCertificate[] asm("_binary_certificate_pem_crt_start");
 extern const uint8_t binaryPrivateKey[] asm("_binary_private_pem_key_start");
-} // namespace
 static constexpr std::string_view TAG{"HUB"};
 } // namespace
 
@@ -60,7 +59,7 @@ void app_main(void) {
     ESP_LOGE(TAG.data(), "radio init fail");
   }
 
-  radio::Rfm95::ModemSettings settings;
+  radio::Rfm95::ModemSettings settings{};
   settings.frequencyHz = 868'000'000;
   settings.lnaBoostHfEnable = true;
   settings.gain = radio::Rfm95::Gain::G1;
@@ -150,8 +149,13 @@ void app_main(void) {
     ESP_LOGE(TAG.data(), "WifiController start fail");
   }
 
+  sw::EventGroup connectionEventGroup;
+  errorCode = connectionEventGroup.init();
+  if (errorCode != common::Error::OK) {
+    ESP_LOGE(TAG.data(), "EventGroup init fail");
+  }
+
   while (1) {
-    button.yield();
     sw::delayMs(10);
   }
 }

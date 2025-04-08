@@ -1,4 +1,5 @@
 #include "nvsstore.hpp"
+#include "esp_log.h"
 #include "nvs_flash.h"
 #include "nvs_handle.hpp"
 #include <vector>
@@ -82,6 +83,14 @@ common::Error NvsStore::setString(const std::string_view& key,
     return common::Error::FAIL;
   }
 
+  const std::string stringSizeKey{std::string(key) +
+                                  STRING_SIZE_KEY_SUFFIX.data()};
+  espErrorCode = handle->set_item(stringSizeKey.data(),
+                                  static_cast<uint8_t>(string.size()));
+  if (espErrorCode != ESP_OK) {
+    return common::Error::FAIL;
+  }
+
   espErrorCode = handle->set_string(key.data(), string.data());
   if (espErrorCode != ESP_OK) {
     return common::Error::FAIL;
@@ -91,7 +100,7 @@ common::Error NvsStore::setString(const std::string_view& key,
 }
 
 common::Error NvsStore::getString(const std::string_view& key,
-                                  std::string& string, size_t size) {
+                                  std::string& string) {
   esp_err_t espErrorCode{ESP_OK};
 
   std::unique_ptr<nvs::NVSHandle> handle =
@@ -99,9 +108,18 @@ common::Error NvsStore::getString(const std::string_view& key,
   if (espErrorCode != ESP_OK) {
     return common::Error::FAIL;
   }
-  size = size + 1;
-  std::vector<char> buffer(size, '\0');
-  espErrorCode = handle->get_string(key.data(), buffer.data(), size);
+
+  const std::string stringSizeKey{std::string(key) +
+                                  STRING_SIZE_KEY_SUFFIX.data()};
+  uint8_t stringSize{0};
+  espErrorCode = handle->get_item(stringSizeKey.data(), stringSize);
+  if (espErrorCode != ESP_OK) {
+    return common::Error::FAIL;
+  }
+  stringSize = stringSize + 1;
+
+  std::vector<char> buffer(stringSize, '\0');
+  espErrorCode = handle->get_string(key.data(), buffer.data(), stringSize);
   if (espErrorCode != ESP_OK) {
     return common::Error::FAIL;
   }

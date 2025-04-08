@@ -17,7 +17,7 @@ class IStorage {
                                     const std::string& string) = 0;
 
     virtual common::Error getString(const std::string_view& key,
-                                    std::string& string, size_t size) = 0;
+                                    std::string& string) = 0;
 
     virtual common::Error save() = 0;
 };

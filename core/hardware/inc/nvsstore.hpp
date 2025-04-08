@@ -101,7 +101,9 @@ class NvsStore final : public IStorage {
     common::Error save() override;
 
   private:
-    static constexpr std::string_view STRING_SIZE_KEY_SUFFIX{"_size"};
+    // 's' stands for "size" — shortened due to the 15-character maximum key
+    // length limitation.
+    static constexpr std::string_view STRING_SIZE_KEY_SUFFIX{"s"};
     static bool isNvsInitialized_;
     std::string_view namespace_;
 };

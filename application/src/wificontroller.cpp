@@ -32,13 +32,14 @@ common::Error WifiController::init() {
   std::string ssid{};
   std::string password{};
 
-  common::Error errorCode = config_.storage.getString(def::key::SSID, ssid);
+  common::Error errorCode =
+      config_.storage.getString(def::key::wifi::STA_SSID, ssid);
   if (errorCode != common::Error::OK) {
     ESP_LOGE(TAG.data(), "Cannot read ssid from nvs");
     return common::Error::FAIL;
   }
 
-  errorCode = config_.storage.getString(def::key::PASSWORD, password);
+  errorCode = config_.storage.getString(def::key::wifi::STA_PASSWORD, password);
   if (errorCode != common::Error::OK) {
     ESP_LOGE(TAG.data(), "Cannot read password from nvs");
     return common::Error::FAIL;

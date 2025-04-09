@@ -74,12 +74,7 @@ class EventGroup {
      */
     common::Error wait(Bits bits, common::Time timeoutMs);
 
-    /**
-     * @brief Retrieves the current state of all bits in the event group.
-     *
-     * @return Bits The current state of the event bits.
-     */
-    Bits getBits() const;
+    bool isBitsSet(Bits bits) const;
 
   private:
     /**

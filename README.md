@@ -66,14 +66,12 @@ You can do this in your firmware by calling the following functions:
 storage::hw::NvsStore storage{"storage"};
 
 std::string ssid{"yourSSID"};
-uint8_t ssidSize{static_cast<uint8_t>(ssid.size())};
-storage.setItem(def::key::SSID_SIZE, ssidSize);
-storage.setString(def::key::SSID, ssid, static_cast<size_t>(ssidSize));
+storage.setString(def::key::SSID, ssid);
 
-std::string password{"yourPassword"};
-uint8_t passwordSize{static_cast<uint8_t>(password.size())};
-storage.setItem(def::key::PASSWORD_SIZE, passwordSize);
-storage.setString(def::key::PASSWORD, password, static_cast<size_t>(passwordSize));
+std::string password{"yourPASSWORD"};
+storage.setString(def::key::PASSWORD, password);
+
+storage.save();
 
 // ...
 ```

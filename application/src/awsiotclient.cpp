@@ -110,7 +110,7 @@ common::Error AwsIotClient::disconnect() {
 
 common::Error AwsIotClient::publish(const std::string_view& topic,
                                     char* payload, size_t payloadSize) {
-  if (payload == nullptr || payloadSize > PAYLOAD_SIZE) {
+  if (payload == nullptr || payloadSize == 0) {
     return common::Error::INVALID_ARG;
   }
 

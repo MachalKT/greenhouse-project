@@ -44,6 +44,7 @@ class AwsIotClient {
 
     /**
      * @brief Constructor for AwsIotClient.
+     *
      * @param clientId The unique client ID for the MQTT connection.
      */
     explicit AwsIotClient(const std::string_view& clientId);

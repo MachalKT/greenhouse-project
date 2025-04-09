@@ -5,6 +5,7 @@ set(SRC
     src/radiothreadcontroller.cpp 
     src/radiothreadhub.cpp 
     src/awsiotclient.cpp
+    src/awsiotthread.cpp
 )
 
 idf_component_register(

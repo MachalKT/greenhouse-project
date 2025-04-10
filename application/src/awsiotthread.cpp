@@ -32,8 +32,8 @@ void AwsIotThread::run_() {
   config_.telemetryQueue.setCallback(
       [](common::Telemetry telemetry, common::Argument arg) {
         assert(arg);
-        auto* awsThread = static_cast<AwsIotThread*>(arg);
-        common::Error errorCode = awsThread->publishTelemetry_(telemetry);
+        auto* thread = static_cast<AwsIotThread*>(arg);
+        common::Error errorCode = thread->publishTelemetry_(telemetry);
         if (errorCode != common::Error::OK) {
           ESP_LOGE(TAG.data(), "Failed to publish telemetry");
         }
@@ -80,8 +80,19 @@ void AwsIotThread::handleConnect_() {
   }
 
   ESP_LOGI(TAG.data(), "Connected to AWS IoT");
-  config_.connectionEventGroup.set(def::net::AWS_CONNECTED_BIT);
-  config_.ledEventQueue.send(def::ui::LedEvent::AWS_CONNECTED);
+
+  errorCode = config_.connectionEventGroup.set(def::net::AWS_CONNECTED_BIT);
+  if (errorCode != common::Error::OK) {
+    ESP_LOGE(TAG.data(), "Failed to set AWS_CONNECTED_BIT errorCode: %d",
+             static_cast<int>(errorCode));
+  }
+
+  errorCode = config_.ledEventQueue.send(def::ui::LedEvent::AWS_CONNECTED);
+  if (errorCode != common::Error::OK) {
+    ESP_LOGE(TAG.data(), "Failed to send AWS_CONNECTED led event errorCode: %d",
+             static_cast<int>(errorCode));
+  }
+
   setSubscriptions_();
 }
 
@@ -99,15 +110,36 @@ void AwsIotThread::handleReconnect_() {
 }
 
 void AwsIotThread::handleDisconnect_() {
-  config_.connectionEventGroup.clear(def::net::AWS_CONNECTED_BIT);
-  config_.ledEventQueue.send(def::ui::LedEvent::AWS_DISCONNECTED);
+  common::Error errorCode =
+      config_.connectionEventGroup.clear(def::net::AWS_CONNECTED_BIT);
+  if (errorCode != common::Error::OK) {
+    ESP_LOGE(TAG.data(), "Failed to clear AWS_CONNECTED_BIT errorCode: %d",
+             static_cast<int>(errorCode));
+
+    /** @note: Sometimes is bug and AWS_CONNECTED_BIT does not clear, you need
+     * to try again to clear it*/
+    ESP_LOGI(TAG.data(), "Clearing AWS_CONNECTED_BIT again");
+    errorCode = config_.connectionEventGroup.clear(def::net::AWS_CONNECTED_BIT);
+    if (errorCode != common::Error::OK) {
+      ESP_LOGE(TAG.data(), "Failed to clear AWS_CONNECTED_BIT errorCode: %d",
+               static_cast<int>(errorCode));
+    }
+  }
+
+  errorCode = config_.ledEventQueue.send(def::ui::LedEvent::AWS_DISCONNECTED);
+  if (errorCode != common::Error::OK) {
+    ESP_LOGE(TAG.data(),
+             "Failed to send AWS_DISCONNECTED led event errorCode: %d",
+             static_cast<int>(errorCode));
+  }
+
   isConnectTriggered_ = true;
   ESP_LOGI(TAG.data(), "Disconnected from AWS IoT");
 }
 
 void AwsIotThread::setSubscriptions_() {
   common::Error errorCode = config_.awsIotClient.subscribe(
-      TELEMETRY_TOPIC, AwsIotClient::Qos::_1,
+      "device/parameters", AwsIotClient::Qos::_1,
       [](const char* topic, uint16_t packetId, void* payload,
          size_t payloadLength, common::Argument arg) {
         ESP_LOGI(TAG.data(), "Received message on topic: %s", topic);

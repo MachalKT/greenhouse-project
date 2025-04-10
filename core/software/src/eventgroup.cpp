@@ -77,6 +77,6 @@ common::Error EventGroup::wait(Bits bits, common::Time timeoutMs) {
   return common::Error::OK;
 }
 
-EventGroup::Bits EventGroup::getBits() const { return allBits_; }
+bool EventGroup::isBitsSet(Bits bits) const { return (allBits_ & bits); }
 
 } // namespace sw

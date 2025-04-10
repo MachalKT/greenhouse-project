@@ -75,11 +75,15 @@ class EventGroup {
     common::Error wait(Bits bits, common::Time timeoutMs);
 
     /**
-     * @brief Retrieves the current state of all bits in the event group.
+     * @brief Checks if specific bits are set in the event group.
      *
-     * @return Bits The current state of the event bits.
+     * @param bits The bits to check.
+     *
+     * @return
+     *   - true: If all the specified bits are set.
+     *   - false: If any of the specified bits are not set.
      */
-    Bits getBits() const;
+    bool isBitsSet(Bits bits) const;
 
   private:
     /**

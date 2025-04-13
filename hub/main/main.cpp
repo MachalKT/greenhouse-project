@@ -130,9 +130,14 @@ void app_main(void) {
     ESP_LOGE(TAG.data(), "Failed to start UiThread");
   }
 
-  common::Telemetry telemetry{};
-  app::RadioThreadHub radioThread{
-      {rfm95, radiorequestTimer, radioTimeoutTimer, ledEventQueue, telemetry}};
+  sw::Queue<common::Telemetry> telemetryQueue{5};
+  errorCode = telemetryQueue.init();
+  if (errorCode != common::Error::OK) {
+    ESP_LOGE(TAG.data(), "Failed to init telemetry queue");
+  }
+
+  app::RadioThreadHub radioThread{{rfm95, radiorequestTimer, radioTimeoutTimer,
+                                   ledEventQueue, telemetryQueue}};
   errorCode = radioThread.start();
   if (errorCode != common::Error::OK) {
     ESP_LOGE(TAG.data(), "Failed to start RadioThread");
@@ -154,12 +159,6 @@ void app_main(void) {
   errorCode = wifiController.start();
   if (errorCode != common::Error::OK) {
     ESP_LOGE(TAG.data(), "Failed to start WifiController");
-  }
-
-  sw::Queue<common::Telemetry> telemetryQueue{5};
-  errorCode = telemetryQueue.init();
-  if (errorCode != common::Error::OK) {
-    ESP_LOGE(TAG.data(), "Failed to init telemetry queue");
   }
 
   std::string clientId{};

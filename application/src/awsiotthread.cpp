@@ -2,6 +2,7 @@
 #include "awspacket.hpp"
 #include "delay.hpp"
 #include "esp_log.h"
+#include <cstring>
 
 namespace {
 static std::string_view TAG{"AWS_IOT"};
@@ -139,10 +140,12 @@ void AwsIotThread::handleDisconnect_() {
 
 void AwsIotThread::setSubscriptions_() {
   common::Error errorCode = config_.awsIotClient.subscribe(
-      "device/parameters", AwsIotClient::Qos::_1,
+      TELEMETRY_TOPIC, AwsIotClient::Qos::_1,
       [](const char* topic, uint16_t packetId, void* payload,
          size_t payloadLength, common::Argument arg) {
-        ESP_LOGI(TAG.data(), "Received message on topic: %s", topic);
+        ESP_LOGI(TAG.data(), "Received message on topic: %s, message: %*s",
+                 topic, static_cast<int>(payloadLength),
+                 static_cast<const char*>(payload));
       },
       nullptr);
   if (errorCode != common::Error::OK) {
@@ -161,8 +164,9 @@ common::Error AwsIotThread::publishTelemetry_(common::Telemetry telemetry) {
     return errorCode;
   }
 
+  const size_t bufferLength = std::strlen(buffer.data());
   return config_.awsIotClient.publish(TELEMETRY_TOPIC, buffer.data(),
-                                      buffer.size());
+                                      bufferLength);
 }
 
 } // namespace app

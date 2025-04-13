@@ -16,8 +16,8 @@ class RadioThreadHub final : public sw::ThreadBase {
         radio::IRadio& radio;
         timer::ITimer& requestTimer;
         timer::ITimer& timeoutTimer;
-        sw::IQueueSender<def::ui::LedEvent>& queue;
-        common::Telemetry& telemetry;
+        sw::IQueueSender<def::ui::LedEvent>& ledEventQueue;
+        sw::IQueueSender<common::Telemetry>& telemetryQueue;
     };
 
     explicit RadioThreadHub(Config config);

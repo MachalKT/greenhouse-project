@@ -88,8 +88,8 @@ class NvsStore final : public IStorage {
      *   - common::Error::OK: Success.
      *   - common::Error::FAIL: Fail.
      */
-    common::Error getString(const std::string_view& key, std::string& string,
-                            size_t size) override;
+    common::Error getString(const std::string_view& key,
+                            std::string& string) override;
 
     /**
      * @brief Saves any pending changes to NVS.
@@ -101,6 +101,9 @@ class NvsStore final : public IStorage {
     common::Error save() override;
 
   private:
+    // 's' stands for "size" — shortened due to the 15-character maximum key
+    // length limitation.
+    static constexpr std::string_view STRING_SIZE_KEY_SUFFIX{"s"};
     static bool isNvsInitialized_;
     std::string_view namespace_;
 };

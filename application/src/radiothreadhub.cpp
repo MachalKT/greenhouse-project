@@ -20,7 +20,8 @@ void RadioThreadHub::run_() {
       [](void* arg) {
         assert(arg);
         RadioThreadHub* radioThread = static_cast<RadioThreadHub*>(arg);
-        radioThread->config_.queue.send(def::ui::LedEvent::RADIO_TIMEOUT);
+        radioThread->config_.ledEventQueue.send(
+            def::ui::LedEvent::RADIO_TIMEOUT);
         ESP_LOGI(TAG.data(), "Radio timeout");
       },
       this);
@@ -102,16 +103,21 @@ void RadioThreadHub::handlePacketData_(const packet::radio::Type& packetType,
 
 void RadioThreadHub::receiveTelemetry_(const uint8_t* buffer,
                                        const size_t bufferLength) {
-  packet::radio::Telemetry telemetryPacket{config_.telemetry};
+  packet::radio::Telemetry telemetryPacket{common::Telemetry{}};
   common::Error errorCode =
       telemetryPacket.parseFromBytes(buffer, bufferLength);
   if (errorCode != common::Error::OK) {
     ESP_LOGE(TAG.data(), "Parse telemetry fail");
   }
 
-  config_.telemetry = telemetryPacket.getTelemetry();
+  auto telemetry = telemetryPacket.getTelemetry();
+  errorCode = config_.telemetryQueue.send(telemetry);
+  if (errorCode != common::Error::OK) {
+    ESP_LOGE(TAG.data(), "Queue send telemetry fail");
+  }
+
   ESP_LOGI(TAG.data(), "Telemetry: temperature: %.2f [C], humidity: %.2f [RH]",
-           config_.telemetry.temperatureC, config_.telemetry.humidityRh);
+           telemetry.temperatureC, telemetry.humidityRh);
 }
 
 void RadioThreadHub::setRequestTimer_() {

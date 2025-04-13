@@ -22,7 +22,8 @@ class WifiController {
     struct Config {
         timer::ITimer& reconnectTimer;
         storage::IStorage& storage;
-        sw::IQueueSender<def::ui::LedEvent>& queue;
+        sw::IQueueSender<def::ui::LedEvent>& ledEventQueue;
+        sw::EventGroup& connectionEventGroup;
     };
     /**
      * @brief Constructs a WifiController instance.
@@ -124,7 +125,8 @@ class WifiController {
     /**
      * @brief Displays information about the connected station.
      *
-     * @param eventData Event data containing the station connected information.
+     * @param eventData Event data containing the station connected
+     information.
      */
     void showConnectedStaInfo_(common::event::Data eventData);
 
@@ -140,13 +142,10 @@ class WifiController {
      * @brief Converts authentication mode to string representation.
      *
      * @param authenticateMode Authentication mode.
+     *
      * @return String representation of the authentication mode.
      */
     std::string_view toString_(net::Wifi::AuthenticateMode authenticateMode);
-
-    common::Error readWifiCredential_(std::string& value,
-                                      const std::string_view valueKey,
-                                      const std::string_view valueSizeKey);
 
     static constexpr common::Time RECONNECT_TIME_US{
         common::utils::msToUs<common::Time, common::Time>(

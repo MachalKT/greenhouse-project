@@ -29,18 +29,17 @@ WifiController::WifiController(Config config) : config_{config} {
 }
 
 common::Error WifiController::init() {
-  std::string ssid{""};
-  std::string password{""};
+  std::string ssid{};
+  std::string password{};
 
   common::Error errorCode =
-      readWifiCredential_(ssid, def::key::SSID, def::key::SSID_SIZE);
+      config_.storage.getString(def::key::wifi::STA_SSID, ssid);
   if (errorCode != common::Error::OK) {
     ESP_LOGE(TAG.data(), "Cannot read ssid from nvs");
     return common::Error::FAIL;
   }
 
-  errorCode = readWifiCredential_(password, def::key::PASSWORD,
-                                  def::key::PASSWORD_SIZE);
+  errorCode = config_.storage.getString(def::key::wifi::STA_PASSWORD, password);
   if (errorCode != common::Error::OK) {
     ESP_LOGE(TAG.data(), "Cannot read password from nvs");
     return common::Error::FAIL;
@@ -98,6 +97,7 @@ void WifiController::wifiEventHandler_(common::Argument arg,
     wifiController->config_.reconnectTimer.stop();
     break;
   case WIFI_EVENT_STA_DISCONNECTED:
+
     wifiController->getWifiInstance_().scan();
     wifiController->reconnect_();
     break;
@@ -119,7 +119,10 @@ void WifiController::ipEventHandler_(common::Argument arg,
 
   if (eventId == IP_EVENT_STA_GOT_IP) {
     wifiController->showIp_(eventData);
-    wifiController->config_.queue.send(def::ui::LedEvent::WIFI_CONNECTED);
+    wifiController->config_.connectionEventGroup.set(
+        def::net::WIFI_CONNECTED_BIT);
+    wifiController->config_.ledEventQueue.send(
+        def::ui::LedEvent::WIFI_CONNECTED);
   }
 }
 
@@ -130,12 +133,13 @@ net::Wifi& WifiController::getWifiInstance_() {
 common::Error WifiController::reconnect_() {
   if (reconnectAttempt_ > MAX_RECONNECT_ATTEMPTS) {
     reconnectAttempt_ = 0;
-    config_.queue.send(def::ui::LedEvent::WIFI_DISCONNECTED);
+    config_.connectionEventGroup.clear(def::net::WIFI_CONNECTED_BIT);
+    config_.ledEventQueue.send(def::ui::LedEvent::WIFI_DISCONNECTED);
     return config_.reconnectTimer.startOnce(RECONNECT_TIME_US);
   }
 
   ++reconnectAttempt_;
-  config_.queue.send(def::ui::LedEvent::WIFI_CONNECTION);
+  config_.ledEventQueue.send(def::ui::LedEvent::WIFI_CONNECTION);
   return getWifiInstance_().connect();
 }
 
@@ -257,25 +261,6 @@ WifiController::toString_(net::Wifi::AuthenticateMode authenticateMode) {
   }
 
   return "UNKNOWN";
-}
-common::Error
-WifiController::readWifiCredential_(std::string& value,
-                                    const std::string_view valueKey,
-                                    const std::string_view valueSizeKey) {
-  uint8_t valueSize{0};
-
-  common::Error errorCode = config_.storage.getItem(valueSizeKey, valueSize);
-  if (errorCode != common::Error::OK) {
-    return common::Error::FAIL;
-  }
-
-  errorCode = config_.storage.getString(valueKey, value,
-                                        static_cast<size_t>(valueSize));
-  if (errorCode != common::Error::OK) {
-    return common::Error::FAIL;
-  }
-
-  return common::Error::OK;
 }
 
 } // namespace app

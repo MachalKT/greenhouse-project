@@ -57,6 +57,9 @@ void UiThread::handleLedEvent_(def::ui::LedEvent& event) {
     color = ui::LedColor::RED;
     setLedTimer_();
     break;
+  case LedEvent::AWS_DISCONNECTED:
+    color = ui::LedColor::YELLOW;
+    break;
   case LedEvent::RADIO_COMMUNICATION:
     radioLedEvent_ = event;
     break;

@@ -44,8 +44,7 @@ void RadioThreadController::processReceiveData_() {
     ESP_LOGE(TAG.data(), "Cannot read data");
   }
 
-  packet::radio::Type packetType =
-      packet::radio::Parser::getType(buffer.data());
+  packet::radio::Type packetType = packet::radio::utils::getType(buffer.data());
   handlePacketData_(packetType, buffer.data(), buffer.size());
 }
 
@@ -73,7 +72,7 @@ void RadioThreadController::sendTelemetry_() {
   std::array<uint8_t, sizeof(packet::radio::Telemetry)> buffer{};
 
   common::Error errorCode =
-      telemetryPacket.parseToBytes(buffer.data(), buffer.size());
+      telemetryPacket.serialize(buffer.data(), buffer.size());
   if (errorCode != common::Error::OK) {
     ESP_LOGE(TAG.data(), "Parse telemetry fail");
   }

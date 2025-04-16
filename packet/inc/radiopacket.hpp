@@ -5,6 +5,7 @@
 
 namespace packet {
 namespace radio {
+static constexpr size_t TYPE_INDEX{0};
 
 /**
  * @brief Enum class representing different types of radio packets.
@@ -17,71 +18,12 @@ enum class Type : uint8_t {
   TELEMETRY          // Packet containing telemetry data
 };
 
-/**
- * @class Parser
- * @brief Class responsible for parsing radio packets.
- */
-class Parser {
-  public:
-    /**
-     * @brief Get the type of the packet from the buffer.
-     *
-     * @param buffer Pointer to the buffer containing the packet data.
-     *
-     * @return Type of the packet.
-     */
-    static Type getType(const uint8_t* buffer);
+namespace utils {
+Type getType(const uint8_t* buffer);
 
-    /**
-     * @brief Parse a request type to bytes.
-     *
-     * @param type Type of the packet.
-     * @param buffer Pointer to the buffer where the bytes will be written.
-     * @param bufferLength Length of the buffer.
-     * @return
-     *   - common::Error::OK: Success.
-     *   - common::Error::FAIL: Fail.
-     */
-    static common::Error parseRequestToBytes(const Type type, uint8_t* buffer,
-                                             const size_t bufferLength);
-
-    /**
-     * @brief Template function to parse data to bytes.
-     *
-     * @tparam T Type of the data to be parsed.
-     * @param type Type of the packet.
-     * @param data Data to be parsed.
-     * @param buffer Pointer to the buffer where the bytes will be written.
-     * @param bufferLength Length of the buffer.
-     *
-     * @return
-     *   - common::Error::OK: Success.
-     *   - common::Error::FAIL: Fail.
-     */
-    template <typename T>
-    common::Error parseToBytes(const Type& type, T& data, uint8_t* buffer,
+common::Error serializeRequest(const Type type, uint8_t* buffer,
                                const size_t bufferLength);
-
-    /**
-     * @brief Template function to parse data from bytes.
-     *
-     * @tparam T Type of the data to be parsed.
-     * @param type Type of the packet.
-     * @param data Data to be parsed.
-     * @param buffer Pointer to the buffer containing the bytes.
-     * @param bufferLength Length of the buffer.
-     *
-     * @return
-     *   - common::Error::OK: Success.
-     *   - common::Error::FAIL: Fail.
-     */
-    template <typename T>
-    common::Error parseFromBytes(const Type& type, T& data,
-                                 const uint8_t* buffer,
-                                 const size_t bufferLength);
-
-    static constexpr size_t TYPE_INDEX{0};
-};
+} // namespace utils
 
 /**
  * @class Telemetry
@@ -115,7 +57,7 @@ class __attribute__((packed)) Telemetry {
      *   - common::Error::OK: Success.
      *   - common::Error::FAIL: Fail.
      */
-    common::Error parseToBytes(uint8_t* buffer, const size_t bufferLength);
+    common::Error serialize(uint8_t* buffer, const size_t bufferLength);
 
     /**
      * @brief Parse telemetry data from bytes.
@@ -127,13 +69,11 @@ class __attribute__((packed)) Telemetry {
      *   - common::Error::OK: Success.
      *   - common::Error::FAIL: Fail.
      */
-    common::Error parseFromBytes(const uint8_t* buffer,
-                                 const size_t bufferLength);
+    common::Error deserialize(const uint8_t* buffer, const size_t bufferLength);
 
   private:
     common::Telemetry telemetry_;
     const Type type_{Type::TELEMETRY};
-    Parser parser;
 };
 
 } // namespace radio

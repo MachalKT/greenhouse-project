@@ -30,7 +30,7 @@ void RadioThreadHub::run_() {
       [](void* arg) {
         assert(arg);
         std::array<uint8_t, sizeof(packet::radio::Type)> buffer{};
-        packet::radio::Parser::parseRequestToBytes(
+        packet::radio::utils::serializeRequest(
             packet::radio::Type::TELEMETRY_REQUEST, buffer.data(),
             buffer.size());
 
@@ -77,8 +77,7 @@ void RadioThreadHub::processReceiveData_() {
     ESP_LOGE(TAG.data(), "Cannot read data");
   }
 
-  packet::radio::Type packetType =
-      packet::radio::Parser::getType(buffer.data());
+  packet::radio::Type packetType = packet::radio::utils::getType(buffer.data());
   handlePacketData_(packetType, buffer.data(), buffer.size());
 }
 
@@ -104,8 +103,7 @@ void RadioThreadHub::handlePacketData_(const packet::radio::Type& packetType,
 void RadioThreadHub::receiveTelemetry_(const uint8_t* buffer,
                                        const size_t bufferLength) {
   packet::radio::Telemetry telemetryPacket{common::Telemetry{}};
-  common::Error errorCode =
-      telemetryPacket.parseFromBytes(buffer, bufferLength);
+  common::Error errorCode = telemetryPacket.deserialize(buffer, bufferLength);
   if (errorCode != common::Error::OK) {
     ESP_LOGE(TAG.data(), "Parse telemetry fail");
   }
@@ -125,7 +123,7 @@ void RadioThreadHub::setRequestTimer_() {
       [](void* arg) {
         assert(arg);
         std::array<uint8_t, sizeof(packet::radio::Type)> buffer{};
-        packet::radio::Parser::parseRequestToBytes(
+        packet::radio::utils::serializeRequest(
             packet::radio::Type::TELEMETRY_REQUEST, buffer.data(),
             buffer.size());
 

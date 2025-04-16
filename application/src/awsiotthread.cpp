@@ -158,7 +158,7 @@ common::Error AwsIotThread::publishTelemetry_(common::Telemetry telemetry) {
   std::array<char, packet::aws::BUFFER_SIZE> buffer{};
   packet::aws::Telemetry telemetryPacket(telemetry);
   common::Error errorCode =
-      telemetryPacket.parseToJsonString(buffer.data(), buffer.size());
+      telemetryPacket.serializeToJson(buffer.data(), buffer.size());
   if (errorCode != common::Error::OK) {
     ESP_LOGE(TAG.data(), "Failed to parse telemetry to JSON");
     return errorCode;

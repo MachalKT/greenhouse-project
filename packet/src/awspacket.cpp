@@ -7,8 +7,8 @@ namespace aws {
 
 Telemetry::Telemetry(common::Telemetry telemetry) : telemetry_{telemetry} {}
 
-common::Error Telemetry::parseToJsonString(char* buffer,
-                                           const size_t bufferLength) {
+common::Error Telemetry::serializeToJson(char* buffer,
+                                         const size_t bufferLength) {
   if (buffer == nullptr || bufferLength == 0) {
     return common::Error::INVALID_ARG;
   }
